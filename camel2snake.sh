@@ -43,7 +43,7 @@ SED_FLAGS_BASE="-n"
 SED_FLAGS=""
 SED_CMD="gp"
 EXCL_PATT=""
-#EXCL_PATT="\bsf\w\+"
+EXCL_PATT_LIST=""
 IN_PLACE_EDIT=0
 FORCE=0
 SHOW_PARAMS=0
@@ -135,9 +135,6 @@ fn_needCmd "sort"
 fn_needCmd "uniq"
 
 # Arguments parsing
-if test $# -eq 0; then
-	fn_err "no FILE argument provided (see --help)" 10
-fi
 while test $# -ge 1; do
 	case "$1" in
 		"--help"|"-h")
@@ -171,20 +168,26 @@ while test $# -ge 1; do
 	shift
 done
 
-fn_createTmpDir "$TMP_DIR_PATT"
-F_PATT_LIST="$DIR_TMP/list.tmp"
-F_PATT_LIST_SORT="$DIR_TMP/list"
-# Generate list of excluded words
-EXCL_PATT_LIST="`echo $EXCL_PATT | tr ':' ' '`"
-if test -z "$EXCL_PATT_LIST"; then
-	fn_err "$EXCL_PATT: wrong exclusion pattern" 4
+if test -z "$FILES"; then
+	fn_err "no FILE argument provided (see --help)" 10
 fi
-echo "" > "$F_PATT_LIST"
-for i in $EXCL_PATT_LIST; do
-	m_say "treating ${i}"
-	sed -n "s/.*\b\(${i}\)\b.*/\1/p" $FILES >> "$F_PATT_LIST"
-done
-cat "$F_PATT_LIST" | sort | uniq > "$F_PATT_LIST_SORT"
+
+# Generate list of excluded words
+if test -n "$EXCL_PATT"; then
+	fn_createTmpDir "$TMP_DIR_PATT"
+	F_PATT_LIST="$DIR_TMP/list.tmp"
+	F_PATT_LIST_SORT="$DIR_TMP/list"
+	EXCL_PATT_LIST="$(echo $EXCL_PATT | tr ':' ' ')"
+	if test -z "$EXCL_PATT_LIST"; then
+		fn_err "$EXCL_PATT: wrong exclusion pattern" 4
+	fi
+	echo "" > "$F_PATT_LIST"
+	for i in $EXCL_PATT_LIST; do
+		m_say "treating ${i}"
+		sed -n "s/.*\b\(${i}\)\b.*/\1/p" $FILES >> "$F_PATT_LIST"
+	done
+	cat "$F_PATT_LIST" | sort | uniq > "$F_PATT_LIST_SORT"
+fi
 
 if test $FORCE -eq 0 && test $IN_PLACE_EDIT -eq 1; then
 	echo WARNING NOOOOOOOOOOOOO && exit
@@ -192,17 +195,17 @@ fi
 
 if test $SHOW_PARAMS -eq 1; then
 	fn_showParams
-	less "$F_PATT_LIST_SORT"
+	test -f "$F_PATT_LIST_SORT" && less "$F_PATT_LIST_SORT"
 fi
 
 # "[^\\]" avoid matching format string in C such as "\nthisVar" which would turn it in "\n_this_var"
 
-echo "SAMPLE OUTPUT"
-echo "\
-sed \"s/[^\\]\b\([a-z]\+\)\([A-Z][a-z]*\)\b/\1_\l\2/ \
-	${SED_CMD}\" $SED_FLAGS_BASE $SED_FLAGS $FILES\
-"
+echo -en "SAMPLE OUTPUT:\n\t"
+cat << EOF
+sed "s/[^\\]\b\([A-Z]\?[a-z]\+\)\([A-Z][a-z]*\)\b/\l\1_\l\2/ ${SED_CMD}"  		$FILES $SED_FLAGS_BASE $SED_FLAGS
+EOF
 exit
+
 sed "s/[^\\]\b\([A-Z]\?[a-z]\+\)\([A-Z][a-z]*\)\b/\l\1_\l\2/ 											${SED_CMD}" $FILES ${SED_FLAGS_BASE} ${SED_FLAGS}
 sed "s/[^\\]\b\([A-Z]\?[a-z]\+\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\b/\l\1_\l\2_\l\3/ 								${SED_CMD}" $FILES ${SED_FLAGS_BASE} ${SED_FLAGS}
 sed "s/[^\\]\b\([A-Z]\?[a-z]\+\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\b/\l\1_\l\2_\l\3_\l\4/  						${SED_CMD}" $FILES ${SED_FLAGS_BASE} ${SED_FLAGS}
