@@ -106,9 +106,9 @@ OPTIONS
 
 EXAMPLE
     $ $PROGRAM_NAME -x "sf\w\+:\w\+_e" *.c *.h
-        test output, won't change lines containing strings like \"sfSpriteSize\" or \"enState_e\"
-    $ $PROGRAM_NAME -x "fn\w\+:s_\w\+" -i.ORIG program.c
-        make a backup of program.c to program.c.ORIG, change case while ignoring words like \"fnGameRender\" or \"s_obj\"
+        test output, won't change lines containing strings like \"sfSpriteSize\" and \"enState_e\"
+    $ $PROGRAM_NAME -x "fn\w\+:s_\w\+:thatDankIntType" -i.ORIG program.c
+        make a backup of program.c to program.c.ORIG, change case while ignoring words like \"fnGameRender\", \"s_obj\" and \"thatDankIntType\"
 
 AUTHOR
     Written by Sylvain Saubier (<http://SystemicResponse.com>)
