@@ -14,6 +14,7 @@ Convert all camelCase (or CamelCase) words to snake_case using `sed` (only teste
 ## EXAMPLE
 	$ camel2snake.sh -x "sf\w\+:\w\+En" *.c *.h
 test output, won't change lines containing strings like \"sfSpriteSize\" or \"CharStateEn\"
+
 	$ camel2snake.sh -x "fn\w\+:st\w\+" -i.ORIG program.c
 make a backup of program.c to program.c.ORIG, change case while ignoring words like \"fnGameRender\" or \"stObj\"
 
