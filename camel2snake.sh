@@ -20,12 +20,10 @@
 
 #TODO ::: Tue 07 Nov 2017 08:05:47 PM CET
 # * figure out general rules for flawless C file parsing (ignore keywords, etc.)
-# * ADD AN OPTION:
-# 	* -x PATTERN to ignore words starting or ending with PATTERN
-# 	* revert changes based on words of LIST
-#  	* revert \n_this to \nThis and \t_this to \tThis and \a, \b, \f, \v, \xHH, \e, \uHHH, \uHHH
-# * PROBLEM: NOT MATCHING NUMBERS IN WORDS!!
-
+# * EXCLUSION PATTERNS
+# 	* -x PATTERN : ignore words matching PATTERN
+# 	* ignore strings preceded by \n, \t, \a, \b, \f, \v, \xHH, \e, \uHHH, \uHHH
+# 		like \nthisVarHere or \tthatParam
 
 set -o nounset
 set -o errexit
@@ -108,17 +106,16 @@ OPTIONS
                         edit files in place, passed to \`sed\` as is, see \`man sed\`
     -f, --force         force in-place editing
     -a FLAGS            pass FLAGS to \`sed\` as is
-    -s                  ignore lines containing \"printf\" and \"puts\" (workaround to avoid unwanted transformation of format strings)
+    -s                  ignore lines containing \"printf\" and \"puts\" (workaround to avoid unwanted transformation of format strings, see BUGS)
 
-EXAMPLE
-    $ $PROGRAM_NAME -x "sf\w\+:\w\+_e" *.c *.h
-        test output, won't change lines containing strings like \"sfSpriteSize\" and \"enState_e\"
-    $ $PROGRAM_NAME -x "fn\w\+:s_\w\+:thatDankIntType" -i.ORIG program.c
-        make a backup of program.c to program.c.ORIG, change case while ignoring words like \"fnGameRender\", \"s_obj\" and \"thatDankIntType\"
+EXAMPLES
+    $ $PROGRAM_NAME -x "sf\w\+:\w\+En" *.c *.h
+        test output, won't change lines containing strings like \"sfSpriteSize\" and \"stateEn\"
+    $ $PROGRAM_NAME -x "fn\w\+:st\w\+:thatDankIntType" -i.ORIG program.c
+        make a backup of program.c to program.c.ORIG, change case while ignoring words like \"fnGameRender\", \"stObj\" and \"thatDankIntType\"
 
 BUGS
-    Only problem is it pokes on formatting string such as "\nThis is" (which becomes \"\n_this_is\").
-    Check hardcoded quoted-strings in your code after running the script.
+    Only problem is it pokes on formatting string such as "\nThis is" (which becomes \"\n_this is\").
 
 AUTHOR
     Written by Sylvain Saubier (<http://SystemicResponse.com>)

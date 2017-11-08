@@ -1,0 +1,13 @@
+* Valid:   anR   AnR   AnRG   AnRGB   AnRGBA   AnRGBAV
+* a55  a55Magnum a55MagnumGun  a55MagnumGun55 
+* a55Magnum is valid (3 atoms)
+* aDoom3BFGGame is valid (7 atoms)
+!!! NOT MATCHING UNDER THIS LINE !!!
+* A55magnum is not valid
+* A55Magnum is not valid
+* 55Magnum is not valid
+* ARGBA should not be valid
+sfA55MagnumEn sfA55Magnum a55MagnumEn
+* \nthisVarHere
+* \tthisVar
+* \vThatParam
