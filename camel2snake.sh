@@ -209,8 +209,12 @@ if test $SHOW_PARAMS -eq 1; then
 	test -f "$F_PATT_LIST_SORT" && less "$F_PATT_LIST_SORT"
 fi
 
+# SED
 FIRST_ATOM="[A-Z]\?[a-z]\+"
 ATOM="[A-Z][a-z]*\|[0-9]\+"
+# PERL
+#FIRST_ATOM="[A-Z]?[a-z]+"
+#ATOM="[A-Z][a-z]*|[0-9]+"
 
 echo -en "SAMPLE OUTPUT:\n\t"
 cat << EOF
@@ -219,6 +223,17 @@ EOF
 if test $FORCE -eq 0 && test $IN_PLACE_EDIT -eq 1; then
 	m_say "$PROGRAM_NAME will now edit the following files:\ $FILES.\nPress CTRL+C to abort, ENTER to continue." && read
 fi
+
+# PERL : 's/(\b|\\n|\\t|\\v|\\f|\\a|\\e)(?!sf)([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)\b/$1\l$2_\l$3/g'
+
+perl -pne '\
+	BOUND="\b|\\n|\\t|\\v|\\f|\\a|\\e"
+	EXCL_PREFIX="sf"
+	FIRST_ATOM="[A-Z]?[a-z]+"
+	ATOM="[A-Z][a-z]*|[0-9]+"
+	s/($BOUND_PATT)(?!$EXCL_PREFIX)(FIRST_ATOM)($ATOM)\b/$1\l$2_\l$3/g ;\
+ 	s/($BOUND_PATT)(?!$EXCL_PREFIX)(FIRST_ATOM)($ATOM)($ATOM)\b/$1\l$2_\l$3_\l$4/g ;\
+	'
 
 sed \
     -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\b/\l\1_\l\2/  											 	${SED_CMD}"\

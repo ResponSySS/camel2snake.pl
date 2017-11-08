@@ -2,12 +2,17 @@
 * a55  a55Magnum a55MagnumGun  a55MagnumGun55 
 * a55Magnum is valid (3 atoms)
 * aDoom3BFGGame is valid (7 atoms)
+--- PARTIAL MATCH ---
+* \nthisVarHere
+* \tthisVar
+* \vThatParam
 !!! NOT MATCHING UNDER THIS LINE !!!
 * A55magnum is not valid
 * A55Magnum is not valid
 * 55Magnum is not valid
 * ARGBA should not be valid
+!!! FORBIDDEN MATCH !!!
 sfA55MagnumEn sfA55Magnum a55MagnumEn
-* \nthisVarHere
-* \tthisVar
-* \vThatParam
+\nsfThisFuck
+intThatType
+\nintThatType
