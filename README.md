@@ -1,4 +1,5 @@
 # camel2snake.sh
+__WORK IN PROGRESS__  
 Convert all camelCase (or CamelCase) words to snake_case using `sed` (works great on C files).
 
 ## USAGE
