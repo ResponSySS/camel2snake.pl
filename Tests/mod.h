@@ -3,14 +3,14 @@
 
 
 char mod_TitleT 
-    (sfRenderWindow * windowMain, sfEvent * event, sfInput * input);
+    (sf_render_window * window_main, sf_event * event, sf_input * input);
 
 char mod_GameG 
-    (sfRenderWindow * windowMain, sfEvent * event, sfInput * input, 
+    (sf_render_window * window_main, sf_event * event, sf_input * input, 
     double * d_score);
 
 char mod_RetryR 
-    (sfRenderWindow * windowMain, sfEvent * event, sfInput * input,
+    (sf_render_window * window_main, sf_event * event, sf_input * input,
     double d_score);
 
 

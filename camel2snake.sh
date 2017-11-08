@@ -6,7 +6,7 @@
 #         USAGE: ./camel2snake.sh 
 # 
 #   DESCRIPTION: Convert camelCase (or CamelCase!) to snake_case.
-# 		(Only tested on C files)
+# 		(Works perfectly on C files)
 # 
 #       OPTIONS: ---
 #  REQUIREMENTS: sed
@@ -22,6 +22,9 @@
 # * figure out general rules for flawless C file parsing (ignore keywords, etc.)
 # * ADD AN OPTION:
 # 	* -x PATTERN to ignore words starting or ending with PATTERN
+# 	* revert changes based on words of LIST
+#  	* revert \n_this to \nThis and \t_this to \tThis and \a, \b, \f, \v, \xHH, \e, \uHHH, \uHHH
+# * PROBLEM: NOT MATCHING NUMBERS IN WORDS!!
 
 
 set -o nounset
@@ -39,13 +42,15 @@ F_PATT_LIST=""
 F_PATT_LIST_SORT=""
 
 FILES=""
+SED_CMD="gp"
 SED_FLAGS_BASE="-n"
 SED_FLAGS=""
-SED_CMD="gp"
+SED_PRE_MATCH=""
 EXCL_PATT=""
 EXCL_PATT_LIST=""
 IN_PLACE_EDIT=0
 FORCE=0
+IGNORE_PRINTF=0
 SHOW_PARAMS=0
 
 # path to dir (string)
@@ -92,7 +97,7 @@ fi
 fn_help() {
 	cat << EOF
 $PROGRAM_NAME $PROGRAM_VER
-    Convert all camelCase (or CamelCase) words to snake_case using \`sed\` (only tested on C files).
+    Convert all camelCase (or CamelCase) words to snake_case using \`sed\` (works great on C files).
 
 USAGE
     $PROGRAM_NAME [OPTIONS] FILE
@@ -103,12 +108,17 @@ OPTIONS
                         edit files in place, passed to \`sed\` as is, see \`man sed\`
     -f, --force         force in-place editing
     -a FLAGS            pass FLAGS to \`sed\` as is
+    -s                  ignore lines containing \"printf\" and \"puts\" (workaround to avoid unwanted transformation of format strings)
 
 EXAMPLE
     $ $PROGRAM_NAME -x "sf\w\+:\w\+_e" *.c *.h
         test output, won't change lines containing strings like \"sfSpriteSize\" and \"enState_e\"
     $ $PROGRAM_NAME -x "fn\w\+:s_\w\+:thatDankIntType" -i.ORIG program.c
         make a backup of program.c to program.c.ORIG, change case while ignoring words like \"fnGameRender\", \"s_obj\" and \"thatDankIntType\"
+
+BUGS
+    Only problem is it pokes on formatting string such as "\nThis is" (which becomes \"\n_this_is\").
+    Check hardcoded quoted-strings in your code after running the script.
 
 AUTHOR
     Written by Sylvain Saubier (<http://SystemicResponse.com>)
@@ -123,11 +133,11 @@ fn_showParams() {
 FILES            %s \n\
 EXCL_PATT_LIST   %s \n\
 SED_CMD          %s \n\
-SED_FLAGS_BASE   %s \n\
 SED_FLAGS        %s \n\
 IN_PLACE_EDIT    %s \n\
+IGNORE_PRINTF    %s \n\
 FORCE            %s \n\
-" "$FILES" "$EXCL_PATT_LIST" $SED_CMD $SED_FLAGS_BASE "$SED_FLAGS" $IN_PLACE_EDIT $FORCE
+" "$FILES" "$EXCL_PATT_LIST" $SED_CMD "$SED_FLAGS" $IN_PLACE_EDIT $IGNORE_PRINTF $FORCE
 }
 
 fn_needCmd "sed"
@@ -157,6 +167,9 @@ while test $# -ge 1; do
 		"-f"|"--force")
 			FORCE=1
 			;;
+		"-s")
+			IGNORE_PRINTF=1
+			;;
 		"--show-params")
 			SHOW_PARAMS=1
 			;;
@@ -181,33 +194,41 @@ if test -n "$EXCL_PATT"; then
 	if test -z "$EXCL_PATT_LIST"; then
 		fn_err "$EXCL_PATT: wrong exclusion pattern" 4
 	fi
-	echo "" > "$F_PATT_LIST"
+	echo > "$F_PATT_LIST"
 	for i in $EXCL_PATT_LIST; do
-		m_say "treating ${i}"
 		sed -n "s/.*\b\(${i}\)\b.*/\1/p" $FILES >> "$F_PATT_LIST"
 	done
 	cat "$F_PATT_LIST" | sort | uniq > "$F_PATT_LIST_SORT"
+	# F_PATT_LIST_SORT will contain original text, F_PATT_LIST will contain transformed text
+	cp "$F_PATT_LIST_SORT" "$F_PATT_LIST"
+	FILES="$FILES $F_PATT_LIST"
 fi
-
-if test $FORCE -eq 0 && test $IN_PLACE_EDIT -eq 1; then
-	echo WARNING NOOOOOOOOOOOOO && exit
+if test $IGNORE_PRINTF -eq 1; then
+	SED_PRE_MATCH='/printf\|puts/!'
 fi
-
+SED_FLAGS="${SED_FLAGS_BASE} ${SED_FLAGS}"
 if test $SHOW_PARAMS -eq 1; then
 	fn_showParams
 	test -f "$F_PATT_LIST_SORT" && less "$F_PATT_LIST_SORT"
 fi
 
-# "[^\\]" avoid matching format string in C such as "\nthisVar" which would turn it in "\n_this_var"
+FIRST_ATOM="[A-Z]\?[a-z]\+"
+ATOM="[A-Z][a-z]*\|[0-9]\+"
 
 echo -en "SAMPLE OUTPUT:\n\t"
 cat << EOF
-sed "s/[^\\]\b\([A-Z]\?[a-z]\+\)\([A-Z][a-z]*\)\b/\l\1_\l\2/ ${SED_CMD}"  		$FILES $SED_FLAGS_BASE $SED_FLAGS
+sed     "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\b/\l\1_\l\2/ ${SED_CMD}"  		${SED_FLAGS} ${FILES}
 EOF
-exit
+if test $FORCE -eq 0 && test $IN_PLACE_EDIT -eq 1; then
+	m_say "$PROGRAM_NAME will now edit the following files:\ $FILES.\nPress CTRL+C to abort, ENTER to continue." && read
+fi
 
-sed "s/[^\\]\b\([A-Z]\?[a-z]\+\)\([A-Z][a-z]*\)\b/\l\1_\l\2/ 											${SED_CMD}" $FILES ${SED_FLAGS_BASE} ${SED_FLAGS}
-sed "s/[^\\]\b\([A-Z]\?[a-z]\+\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\b/\l\1_\l\2_\l\3/ 								${SED_CMD}" $FILES ${SED_FLAGS_BASE} ${SED_FLAGS}
-sed "s/[^\\]\b\([A-Z]\?[a-z]\+\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\b/\l\1_\l\2_\l\3_\l\4/  						${SED_CMD}" $FILES ${SED_FLAGS_BASE} ${SED_FLAGS}
-sed "s/[^\\]\b\([A-Z]\?[a-z]\+\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\b/\l\1_\l\2_\l\3_\l\4_\l\5/  			${SED_CMD}" $FILES ${SED_FLAGS_BASE} ${SED_FLAGS}
-sed "s/[^\\]\b\([A-Z]\?[a-z]\+\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\([A-Z][a-z]*\)\b/\l\1_\l\2_\l\3_\l\4_\l\5_\l\6/  	${SED_CMD}" $FILES ${SED_FLAGS_BASE} ${SED_FLAGS}
+sed \
+    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\b/\l\1_\l\2/  											 	${SED_CMD}"\
+    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3/ 										${SED_CMD}"\
+    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3_\l\4/ 								${SED_CMD}"\
+    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3_\l\4_\l\5/ 						${SED_CMD}"\
+    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3_\l\4_\l\5_\l\6/ 				${SED_CMD}"\
+    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3_\l\4_\l\5_\l\6_\l\7/			${SED_CMD}"\
+    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3_\l\4_\l\5_\l\6_\l\7_\l\8/ ${SED_CMD}"\
+	${SED_FLAGS} ${FILES}

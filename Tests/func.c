@@ -6,28 +6,28 @@
 
 #include "func.h"
 
-inline sfBool fnGame_IsItTimeToAnimCarlitaSmile 
+inline sf_bool fnGame_IsItTimeToAnimCarlitaSmile 
 	(double d_time, double * d_nextAnimTime)
 {
 	if (d_time > (*d_nextAnimTime))
     {	*(d_nextAnimTime) = d_time + D_ANIM_CARLITA_SMILE_STEP_TIME;
-        return sfTrue;
+        return sf_true;
     }
-	return sfFalse;
+	return sf_false;
 }
 
-inline sfBool fnGame_IsItTimeToAnimCarlitaFeet
+inline sf_bool fnGame_IsItTimeToAnimCarlitaFeet
 	(double d_time, double * d_nextAnimTime)
 {
 	if (d_time > (*d_nextAnimTime))
     {	*(d_nextAnimTime) = d_time + D_ANIM_CARLITA_FEET_STEP_TIME;
-        return sfTrue;
+        return sf_true;
     }
-	return sfFalse;
+	return sf_false;
 }
 
 inline int fnGame_CarlitaAnimateSmile
-    (sfSprite * spr, sfIntRect * irect_spr, 
+    (sf_sprite * spr, sf_int_rect * irect_spr, 
     int * ip_animStep)
 {
     (*(ip_animStep))++;
@@ -44,7 +44,7 @@ inline int fnGame_CarlitaAnimateSmile
 }
 
 inline int fnGame_CarlitaAnimateFeet
-    (sfSprite * spr, sfIntRect * irect_spr, 
+    (sf_sprite * spr, sf_int_rect * irect_spr, 
     int * ip_animStep)
 {
     (*(ip_animStep))++;
@@ -60,18 +60,18 @@ inline int fnGame_CarlitaAnimateFeet
     return (*(ip_animStep));
 }
 
-inline sfBool fnGame_IsItTimeToAnimJuanDance
+inline sf_bool fnGame_IsItTimeToAnimJuanDance
 	(double d_time, double * d_nextAnimTime)
 {
 	if (d_time > (*d_nextAnimTime))
     {	*(d_nextAnimTime) = d_time + D_ANIM_JUAN_DANCE_STEP_TIME;
-        return sfTrue;
+        return sf_true;
     }
-	return sfFalse;
+	return sf_false;
 }
 
 inline int fnGame_JuanAnimateDance
-    (sfSprite * spr, sfIntRect * irect_spr, 
+    (sf_sprite * spr, sf_int_rect * irect_spr, 
     int * ip_animStep)
 {
     (*(ip_animStep))++;
@@ -88,7 +88,7 @@ inline int fnGame_JuanAnimateDance
 }
 
 inline void fnGame_JuanDoesNotDance
-    (sfSprite * spr, sfIntRect * irect_spr)
+    (sf_sprite * spr, sf_int_rect * irect_spr)
 {
     (*(irect_spr)).Left = 0;
     (*(irect_spr)).Right = I_JUAN_SPR_WIDTH;
@@ -97,7 +97,7 @@ inline void fnGame_JuanDoesNotDance
 }
 
 inline void fnGame_PeopleLooksDown
-    (sfSprite * spr, sfIntRect * irect_spr)
+    (sf_sprite * spr, sf_int_rect * irect_spr)
 {
     (*(irect_spr)).Top      = 0;
     (*(irect_spr)).Bottom   = I_PEOPLE_SPR_WIDTH;
@@ -105,7 +105,7 @@ inline void fnGame_PeopleLooksDown
 }
 
 inline void fnGame_PeopleLooksUp
-    (sfSprite * spr, sfIntRect * irect_spr)
+    (sf_sprite * spr, sf_int_rect * irect_spr)
 {
     (*(irect_spr)).Top      = I_PEOPLE_SPR_WIDTH;
     (*(irect_spr)).Bottom   = I_PEOPLE_SPR_WIDTH + I_PEOPLE_SPR_WIDTH;
@@ -117,18 +117,18 @@ inline void fnGame_PeopleLooksUp
     1 + (120 * f)
 /* F_JUAN_HEALTH_MAX must 2.f */
 inline void fnGame_ArrowPositive 
-    (sfSprite * spr, float f_health)
+    (sf_sprite * spr, float f_health)
 {
     sfSprite_SetColor
         (spr, sfColor_FromRGB (96, (MAC_UINT8_DEPENDS_ON_F_VAR (f_health)), 63));
-    sfSprite_FlipY      (spr, sfTrue);
+    sfSprite_FlipY      (spr, sf_true);
 }
 
 /* F_JUAN_HEALTH_MAX must 2.f */
 inline void fnGame_ArrowNegative
-    (sfSprite * spr, float f_health)
+    (sf_sprite * spr, float f_health)
 {
     sfSprite_SetColor
         (spr, sfColor_FromRGB ((MAC_UINT8_DEPENDS_ON_F_VAR (f_health)), 32, 32));
-    sfSprite_FlipY      (spr, sfFalse);
+    sfSprite_FlipY      (spr, sf_false);
 }

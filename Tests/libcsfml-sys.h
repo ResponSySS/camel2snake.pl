@@ -24,191 +24,191 @@
 /* WELCOME TO MY VERY PERSONAL LIBRARY! */
 
 
-/* sfRenderWindow-related */
+/* sf_render_window-related */
 
 #define STR_VERSION                 "Juan version 2013.12"
 
-sfRenderWindow * sfSyS_sfRenderWindowReadCmdArgs 
+sf_render_window * sfSyS_sfRenderWindowReadCmdArgs 
     (const char * ccp_title, int argc, char * argv []);
 
-sfBool sfSyS_sfRenderWindowFramerateAsk 
-    (sfRenderWindow * windowMain);
+sf_bool sfSyS_sfRenderWindowFramerateAsk 
+    (sf_render_window * window_main);
 
 int sfSyS_sfRenderWindowInWhichPartOfAreYou
-	(sfRenderWindow * windowMain,
-	const int mouseX, const int mouseY,
-	const sfFloatRect viewFloatRect);
+	(sf_render_window * window_main,
+	const int mouse_x, const int mouse_y,
+	const sf_float_rect view_float_rect);
 
 
-/* sfInput-related */
+/* sf_input-related */
 
-sfBool sfSyS_sfInputIsMouseButtonReleased 
-    (sfInput * input, sfMouseButton button, 
-    sfBool mouseButtonPreviousState);
-
-
-/* sfView-related */
-
-sfBool sfSyS_sfViewAreYouInside
-	(sfFloatRect viewFloatRect,
-	const int xCoordinateToTest, const int yCoordinateToTest);
+sf_bool sfSyS_sfInputIsMouseButtonReleased 
+    (sf_input * input, sf_mouse_button button, 
+    sf_bool mouse_button_previous_state);
 
 
-/* sfThread-related */
+/* sf_view-related */
+
+sf_bool sfSyS_sfViewAreYouInside
+	(sf_float_rect view_float_rect,
+	const int x_coordinate_to_test, const int y_coordinate_to_test);
+
+
+/* sf_thread-related */
 
 // Requirement for sleep ()
 #include <unistd.h>
 void fn_thrdClock (void * arg);
 
 
-/* sfSprite-related */
+/* sf_sprite-related */
 
-inline sfSprite * sfSyS_sfSpriteDeclare 
-	(sfImage * img, const char * str_pathToImage, const sfBool bl_smoothImage,
-	sfColor clr_spr, const sfBool bl_centerSpr,
+inline sf_sprite * sfSyS_sfSpriteDeclare 
+	(sf_image * img, const char * str_pathToImage, const sf_bool bl_smoothImage,
+	sf_color clr_spr, const sf_bool bl_centerSpr,
 	const float cflt_resizeWidth, const float cflt_resizeHeight);
 
 void sfSyS_sfSpritePrintPosAndCenter
-	(sfSprite * sfsprite, const char * strNameOfSfstring);
+	(sf_sprite * sfsprite, const char * str_name_of_sfstring);
 
 inline sfUint8 sfSyS_sfSpriteAlphaIncDec 
-	(sfSprite * sprite, int intensity,
+	(sf_sprite * sprite, int intensity,
 	const int min, const int max);
 
 void sfSyS_sfSpriteColorIncDec 
-	(sfSprite * sprite,
-	const int redIncreaseIntensity, 
-	const int greenIncreaseIntensity, 
-	const int blueIncreaseIntensity,
-	const int alphaIncreaseIntensity);
+	(sf_sprite * sprite,
+	const int red_increase_intensity, 
+	const int green_increase_intensity, 
+	const int blue_increase_intensity,
+	const int alpha_increase_intensity);
 
 char sfSyS_sfSpriteAreWeInside 
 	(const float cflt_globalX, const float cflt_globalY, 
-	sfSprite * spriteToTest,
-	const float widthSpriteToTest, const float heightSpriteToTest);
+	sf_sprite * sprite_to_test,
+	const float width_sprite_to_test, const float height_sprite_to_test);
 
-sfBool sfSyS_sfSpritePutOnGroundProperly
-	(sfSprite * spriteToPutOnTheGround,
-	sfSprite * spriteToTest, 
-	const float widthSpriteToTest, const float heightSpriteToTest,
-	const sfFloatRect viewFloatRect, const sfBool caringAboutTheView);
+sf_bool sfSyS_sfSpritePutOnGroundProperly
+	(sf_sprite * sprite_to_put_on_the_ground,
+	sf_sprite * sprite_to_test, 
+	const float width_sprite_to_test, const float height_sprite_to_test,
+	const sf_float_rect view_float_rect, const sf_bool caring_about_the_view);
 
-sfBool sfSyS_sfSpritePutOnGroundFromBottom
-	(sfSprite * spriteToPutOnTheGround,
-	sfSprite * spriteToTest, 
-	const int widthSpriteToTest, const int heightSpriteToTest,
-	const sfFloatRect viewFloatRect, const sfBool caringAboutTheView);
+sf_bool sfSyS_sfSpritePutOnGroundFromBottom
+	(sf_sprite * sprite_to_put_on_the_ground,
+	sf_sprite * sprite_to_test, 
+	const int width_sprite_to_test, const int height_sprite_to_test,
+	const sf_float_rect view_float_rect, const sf_bool caring_about_the_view);
 
-sfBool sfSyS_sfSpriteAnimate 
-	(sfSprite ** sprite, const char * directionOfTheLastMove, 
-	char * beginningOfPathToImage, int * currentAnimationStep, 
-	const int maxNumberOfAnimationStep, sfBool smoothImage, 
-	sfBool timeToChangeAnimationSprite);
+sf_bool sfSyS_sfSpriteAnimate 
+	(sf_sprite ** sprite, const char * direction_of_the_last_move, 
+	char * beginning_of_path_to_image, int * current_animation_step, 
+	const int max_number_of_animation_step, sf_bool smooth_image, 
+	sf_bool time_to_change_animation_sprite);
 
 
-/* sfShape-related */
+/* sf_shape-related */
 
-sfShape * sfSyS_sfShapeCircleDeclaration
-	(const float fltCenterX, const float fltCenterY,
-	const float fltRadius,
-	sfColor colorFill,
-	float fltOutlineThickness,
-	sfColor colorOutline,
-	const sfBool boolEnableFill, const sfBool boolEnableOutline,
-	const sfBool boolCenterSpriteOnItself,
-	const float fltScaleX, const float fltScaleY);
+sf_shape * sfSyS_sfShapeCircleDeclaration
+	(const float flt_center_x, const float flt_center_y,
+	const float flt_radius,
+	sf_color color_fill,
+	float flt_outline_thickness,
+	sf_color color_outline,
+	const sf_bool bool_enable_fill, const sf_bool bool_enable_outline,
+	const sf_bool bool_center_sprite_on_itself,
+	const float flt_scale_x, const float flt_scale_y);
 
 #include <math.h>
 
-sfShape * * sfSyS_sfShapeCircleSmoothDeclare
-	(const int cint_arrSize, const float fltRatioConcentricCirlces,
-	const float fltCenterX, const float fltCenterY,
-	float fltRadius, sfColor colorFill,
-	const sfBool boolEnableFill,
-	const sfBool boolCenterSpriteOnItself,
-	const float fltScaleX, const float fltScaleY);
+sf_shape * * sfSyS_sfShapeCircleSmoothDeclare
+	(const int cint_arrSize, const float flt_ratio_concentric_cirlces,
+	const float flt_center_x, const float flt_center_y,
+	float flt_radius, sf_color color_fill,
+	const sf_bool bool_enable_fill,
+	const sf_bool bool_center_sprite_on_itself,
+	const float flt_scale_x, const float flt_scale_y);
 
-sfShape * * sfSyS_sfShapeCircleSmoothDeclareWithOutline
-	(const int cint_arrSize, const float fltRatioConcentricCirlces,
-	const float fltCenterX, const float fltCenterY,
-	float fltRadius,
-	sfColor colorFill,
-	float fltOutlineThickness,
-	sfColor colorOutline,
-	const sfBool boolEnableFill,
-	const sfBool boolCenterSpriteOnItself,
-	const float fltScaleX, const float fltScaleY);
+sf_shape * * sfSyS_sfShapeCircleSmoothDeclareWithOutline
+	(const int cint_arrSize, const float flt_ratio_concentric_cirlces,
+	const float flt_center_x, const float flt_center_y,
+	float flt_radius,
+	sf_color color_fill,
+	float flt_outline_thickness,
+	sf_color color_outline,
+	const sf_bool bool_enable_fill,
+	const sf_bool bool_center_sprite_on_itself,
+	const float flt_scale_x, const float flt_scale_y);
 
-sfShape * sfSyS_sfShapeRectOrLineDeclare
-	(const char charTypeOfShape,
+sf_shape * sfSyS_sfShapeRectOrLineDeclare
+	(const char char_type_of_shape,
 	float P1X, float P1Y, float P2X, float P2Y,
-	const float fltThickness,
-	sfColor colorFill,
-	float fltOutlineThickness,
-	sfColor colorOutline,
-	const sfBool boolEnableFill, const sfBool boolEnableOutline,
-	const sfBool boolCenterSpriteOnItself,
-	const float fltScaleX, const float fltScaleY);
+	const float flt_thickness,
+	sf_color color_fill,
+	float flt_outline_thickness,
+	sf_color color_outline,
+	const sf_bool bool_enable_fill, const sf_bool bool_enable_outline,
+	const sf_bool bool_center_sprite_on_itself,
+	const float flt_scale_x, const float flt_scale_y);
 
 inline sfUint8 sfSyS_sfShapeAlphaIncDec 
-	(sfShape * shape, int intensity,
+	(sf_shape * shape, int intensity,
 	const int min, const int max);
 
 //sfUint8 sfSyS_sfShapeCircleSmoothAlphaIncDec 
-	//(sfShape * * shp_circleSmooth, int shrt_arraySize,
+	//(sf_shape * * shp_circleSmooth, int shrt_arraySize,
 	//const sfUint8 sfuint8_intensity,
 	//int shrt_minTopLayer, int shrt_maxTopLayer,
-	//const sfBool bl_hasOutline,
+	//const sf_bool bl_hasOutline,
 	//const int cshrt_minOutLayer, const int cshrt_maxOutLayer);
 
 inline void sfSyS_sfShapeCircleSmoothDraw 
-	(sfRenderWindow * windowMain, 
-	sfShape * * shapeCircleSmooth, int int_arrSize);
+	(sf_render_window * window_main, 
+	sf_shape * * shape_circle_smooth, int int_arrSize);
 
 inline void sfSyS_sfShapeCircleSmoothMove
-	(sfShape * * shapeCircleSmooth, int int_arrSize,
-	float fltOffsetX, float fltOffsetY);
+	(sf_shape * * shape_circle_smooth, int int_arrSize,
+	float flt_offset_x, float flt_offset_y);
 
 inline void sfSyS_sfShapeCircleSmoothSetPosition
-	(sfShape * * shapeCircleSmooth, int int_arrSize,
+	(sf_shape * * shape_circle_smooth, int int_arrSize,
 	 float flt_X, float flt_Y);
 
 void sfSyS_sfShapeCircleSmoothSetColor
-	(sfShape * * shapeCircleSmooth, int int_arrSize,
-	sfColor color_new);
+	(sf_shape * * shape_circle_smooth, int int_arrSize,
+	sf_color color_new);
 
 
-/* sfString-related */
+/* sf_string-related */
 
-inline sfString * sfSyS_sfStringDeclare
-	(sfFont * font, const char * pathToFont, 
-	unsigned int uintCharSize, const sfUint32 * ptrUintCharset,
-	const char * strText, sfColor colorString,
-	const sfBool boolCenterSpriteOnItself,
-	const float fltScaleX, const float fltScaleY);
+inline sf_string * sfSyS_sfStringDeclare
+	(sf_font * font, const char * path_to_font, 
+	unsigned int uint_char_size, const sfUint32 * ptr_uint_charset,
+	const char * str_text, sf_color color_string,
+	const sf_bool bool_center_sprite_on_itself,
+	const float flt_scale_x, const float flt_scale_y);
 
 float sfSyS_sfStringGetHeight
-	(sfString * sfstring);
+	(sf_string * sfstring);
 
 float sfSyS_sfStringGetWidth
-	(sfString * sfstring);
+	(sf_string * sfstring);
 
 inline void sfSyS_sfStringCenter
-    (sfString * str);
+    (sf_string * str);
 
 void sfSyS_sfStringPrintPosAndCenter
-	(sfString * sfstring, const char * strNameOfSfstring);
+	(sf_string * sfstring, const char * str_name_of_sfstring);
 
 inline sfUint8 sfSyS_sfStringAlphaIncDec 
-	(sfString * sfstring, int intensity,
+	(sf_string * sfstring, int intensity,
 	const int min, const int max);
 
 
-/* sfSound-related */
+/* sf_sound-related */
 
-inline sfSound * sfSyS_sfSoundDeclare_sfSnd
-	(sfSoundBuffer * sndbuff, const char * str_pathToSound, 
-	const sfBool cbl_loop,
+inline sf_sound * sfSyS_sfSoundDeclare_sfSnd
+	(sf_sound_buffer * sndbuff, const char * str_pathToSound, 
+	const sf_bool cbl_loop,
 	const float cflt_pitch, const float cflt_vol);
 
 
@@ -218,7 +218,7 @@ inline sfSound * sfSyS_sfSoundDeclare_sfSnd
 
 // Change this value according to your needs
 #define     D_ANIM_STEP_TIME            0.5
-inline sfBool sfSyS_IsItTimeToAnim 
+inline sf_bool sfSyS_IsItTimeToAnim 
 	(double d_time, double * d_nextAnimTime);
 
 

@@ -3,14 +3,14 @@
 
 /* WELCOME TO AMYSAH'S VERY PERSONAL LIBRARY! */
 
-// Pattern: 		sfSyS_[relatedTypeWhatItDoes]_[paramlist]_[returnType] ()
-// e.g.:	sfBool 	sfSyS_sfViewAreYouInside_1r2i_b
+// Pattern: 		sfSyS_[related_type_what_it_does]_[paramlist]_[return_type] ()
+// e.g.:	sf_bool 	sfSyS_sfViewAreYouInside_1r2i_b
 //			int sfSyS_sfRenderWindowInWhichPartOfAreYou_1pw2i1r_i
 
 
-/* sfRenderWindow-related */
+/* sf_render_window-related */
 
-sfRenderWindow * sfSyS_sfRenderWindowReadCmdArgs 
+sf_render_window * sfSyS_sfRenderWindowReadCmdArgs 
     (const char * ccp_title, int argc, char * argv [])
 /* Read the following cmd line args:
  *      nothing:            auto-detect resolution, windowed mode
@@ -20,26 +20,26 @@ sfRenderWindow * sfSyS_sfRenderWindowReadCmdArgs
  *      "--help" (same behavior as if wrong args)
  */
 {
-    sfVideoMode vidMode             = sfVideoMode_GetDesktopMode ();
-    unsigned long winStyle          = sfTitlebar;
-    sfWindowSettings winSettings    = {24, 8, 8};
+    sf_video_mode vid_mode             = sfVideoMode_GetDesktopMode ();
+    unsigned long win_style          = sf_titlebar;
+    sf_window_settings win_settings    = {24, 8, 8};
     
     if (argc == 1)
-    {   return (sfRenderWindow_Create (vidMode, ccp_title, winStyle, winSettings));
+    {   return (sfRenderWindow_Create (vid_mode, ccp_title, win_style, win_settings));
     }
     
     int i; 
     for (i = 1; i < argc; i++)
     {   if (strncmp ("--fullscreen", argv [i], strlen (argv [i])) == 0)
-        {   winStyle = sfFullscreen;
+        {   win_style = sf_fullscreen;
         }
         else if (strncmp ("--resolution", argv [i], strlen (argv [i])) == 0)
         {   if ( isdigit (*(argv [++i] + 0)) )
-                vidMode.Width    = atoi (argv [i]);
+                vid_mode.Width    = atoi (argv [i]);
             else    goto Label_ShowUsage;
             
             if ( isdigit (*(argv [++i] + 0)) )
-                vidMode.Height   = atoi (argv [i]);
+                vid_mode.Height   = atoi (argv [i]);
             else    goto Label_ShowUsage;
         }
         else if (strncmp ("--version", argv [i], strlen (argv [i])) == 0)
@@ -53,7 +53,7 @@ sfRenderWindow * sfSyS_sfRenderWindowReadCmdArgs
             goto Label_ShowUsage;
         }
     }
-    return (sfRenderWindow_Create (vidMode, ccp_title, winStyle, winSettings));
+    return (sfRenderWindow_Create (vid_mode, ccp_title, win_style, win_settings));
     
     Label_ShowUsage:
     puts   ("Usage:");
@@ -65,29 +65,29 @@ sfRenderWindow * sfSyS_sfRenderWindowReadCmdArgs
     return NULL;
 }
 
-sfBool sfSyS_sfRenderWindowFramerateAsking 
-	(sfRenderWindow * windowMain)
+sf_bool sfSyS_sfRenderWindowFramerateAsking 
+	(sf_render_window * window_main)
 {
 	puts ("Framerate, sir?");
 	printf ("\t");
-	int datFramerate; 
-	if (scanf ("%d", &datFramerate) > 0)
-		sfRenderWindow_SetFramerateLimit (windowMain, datFramerate);
+	int dat_framerate; 
+	if (scanf ("%d", &dat_framerate) > 0)
+		sfRenderWindow_SetFramerateLimit (window_main, dat_framerate);
 	
-	if (datFramerate > 0)
-		return sfTrue;
+	if (dat_framerate > 0)
+		return sf_true;
 	else
-		return sfFalse;
+		return sf_false;
 }
 
 int sfSyS_sfRenderWindowInWhichPartOfAreYou
-	(sfRenderWindow * windowMain,
+	(sf_render_window * window_main,
 	const int cint_mouseX, const int cint_mouseY,
-	const sfFloatRect viewFloatRect)
+	const sf_float_rect view_float_rect)
 /* First, check if you're above 
- * the line from 0,0 to windowWidth,windowHeight;
+ * the line from 0,0 to window_width,window_height;
  * then, check if you're below 
- * the line from 0,0 to windowWidth,windowHeight.
+ * the line from 0,0 to window_width,window_height.
  * 
  * \xxxx			   /x			\xx/o
  *  \xxx   	then	  /xx	 to		 \/oo
@@ -105,20 +105,20 @@ int sfSyS_sfRenderWindowInWhichPartOfAreYou
  * 
  * */
 {
-	sfBool 	upperRight = sfFalse, 
-			bottomRight = sfFalse;
+	sf_bool 	upper_right = sf_false, 
+			bottom_right = sf_false;
 	int returnedint;
 	
-	const float windowWidth = (viewFloatRect.Right - viewFloatRect.Left);
-	const float windowHeight = (viewFloatRect.Bottom - viewFloatRect.Top);
+	const float window_width = (view_float_rect.Right - view_float_rect.Left);
+	const float window_height = (view_float_rect.Bottom - view_float_rect.Top);
 	
-	const float windowRatio = windowWidth / windowHeight;
+	const float window_ratio = window_width / window_height;
 	
 	
-	const float ratioXOutOfY = (float) cint_mouseX / (float) cint_mouseY;
+	const float ratio_x_out_of_y = (float) cint_mouseX / (float) cint_mouseY;
 	printf ("\t\tratio 1: %f\n", ratioXOutOfY);
-	/* The first ratio is mouseX/mouseY, will be compared
-	 * with the line from 0,0 to windowWidth,windowHeight
+	/* The first ratio is mouse_x/mouse_y, will be compared
+	 * with the line from 0,0 to window_width,window_height
 	 * \xxxx
 	 *  \xxx
 	 *   \xx
@@ -126,22 +126,22 @@ int sfSyS_sfRenderWindowInWhichPartOfAreYou
 	 */
 	
 	/* First test */
-	if (ratioXOutOfY > (windowRatio))
+	if (ratio_x_out_of_y > (window_ratio))
 	{
 		printf ("\t\t\tMouse in the upper right corner.\n");
-		upperRight = sfTrue;
+		upper_right = sf_true;
 	}
 	
 	
-	const int mouseXLessZero 			= cint_mouseX - 0;
-	const int mouseYLessWindowHeight 	= cint_mouseY - windowHeight;
+	const int mouse_x_less_zero 			= cint_mouseX - 0;
+	const int mouse_y_less_window_height 	= cint_mouseY - window_height;
 	
 	
 	float ratioXLessZeroOutOfYLessWindowHeight 	= 
-		(float) mouseXLessZero / (float) mouseYLessWindowHeight;
+		(float) mouse_x_less_zero / (float) mouse_y_less_window_height;
 	printf ("\t\tratio 2: %f\n", ratioXLessZeroOutOfYLessWindowHeight);
-	/* The second ratio is mouseX/mouseY, will be compared
-	 * with the line from 0,windowHeight to windowWidth,0
+	/* The second ratio is mouse_x/mouse_y, will be compared
+	 * with the line from 0,window_height to window_width,0
 	 *    /x
 	 *   /xx
 	 *  /xxx
@@ -149,24 +149,24 @@ int sfSyS_sfRenderWindowInWhichPartOfAreYou
 	 */
 	
 	/* Second and final test */
-	if (ratioXLessZeroOutOfYLessWindowHeight < (- windowRatio))
+	if (ratioXLessZeroOutOfYLessWindowHeight < (- window_ratio))
 	{
 		printf ("\t\t\tMouse in the bottom right corner.\n");
-		bottomRight = sfTrue;
+		bottom_right = sf_true;
 	}
 	
 	
 	/* Results */
-	if (upperRight)
+	if (upper_right)
 	{
-		if (bottomRight)
+		if (bottom_right)
 			returnedint = 1;
 		else
 			returnedint = 0;
 	}
 	else
 	{
-		if (bottomRight)
+		if (bottom_right)
 			returnedint = 2;
 		else
 			returnedint = 3;
@@ -177,49 +177,49 @@ int sfSyS_sfRenderWindowInWhichPartOfAreYou
 }
 
 
-/* sfInput-related */
+/* sf_input-related */
 
-sfBool sfSyS_sfInputIsMouseButtonReleased 
-	(sfInput * input, sfMouseButton button, sfBool mouseButtonPreviousState)
-/* needs an external sfBool mouseButtonPreviousState 
+sf_bool sfSyS_sfInputIsMouseButtonReleased 
+	(sf_input * input, sf_mouse_button button, sf_bool mouse_button_previous_state)
+/* needs an external sf_bool mouse_button_previous_state 
  * 
  * loop:
  * 		this ();
- * 		mouseButtonPreviousState = sfInput_IsMouseButtonDown (input, button);*/
+ * 		mouse_button_previous_state = sfInput_IsMouseButtonDown (input, button);*/
 {
-	if (mouseButtonPreviousState == sfTrue)
+	if (mouse_button_previous_state == sf_true)
 	{
-		if (sfInput_IsMouseButtonDown (input, button) == sfFalse)
-			return sfTrue;
+		if (sfInput_IsMouseButtonDown (input, button) == sf_false)
+			return sf_true;
 	}
 	
-	return sfFalse;
+	return sf_false;
 }
 
 
-/* sfView-related */
+/* sf_view-related */
 
-sfBool sfSyS_sfViewAreYouInside
-//sfBool sfSyS_sfViewAreYouInside_1r2i_b
-	(sfFloatRect viewFloatRect,
-	const int xCoordinateToTest, const int yCoordinateToTest)
+sf_bool sfSyS_sfViewAreYouInside
+//sf_bool sfSyS_sfViewAreYouInside_1r2i_b
+	(sf_float_rect view_float_rect,
+	const int x_coordinate_to_test, const int y_coordinate_to_test)
 {
 	if (
-		viewFloatRect.Bottom < yCoordinateToTest
+		view_float_rect.Bottom < y_coordinate_to_test
 		|| 
-		viewFloatRect.Top > yCoordinateToTest
+		view_float_rect.Top > y_coordinate_to_test
 		||
-		viewFloatRect.Left > xCoordinateToTest
+		view_float_rect.Left > x_coordinate_to_test
 		||
-		viewFloatRect.Right < xCoordinateToTest
+		view_float_rect.Right < x_coordinate_to_test
 		)
-			return sfFalse; //Out of the view
+			return sf_false; //Out of the view
 	else
-			return sfTrue;	//In the view
+			return sf_true;	//In the view
 }
 
 
-/* sfThread-related */
+/* sf_thread-related */
 
 void fn_thrdClock (void * arg)
 {
@@ -232,15 +232,15 @@ void fn_thrdClock (void * arg)
 	}
 }
 
-/* sfSprite-related */
+/* sf_sprite-related */
 
-inline sfSprite * sfSyS_sfSpriteDeclare 
-	(sfImage * img, 
-	const char * ccp_pathToImage, const sfBool bl_smoothImage,
-	sfColor clr_spr, const sfBool bl_centerSpr,
+inline sf_sprite * sfSyS_sfSpriteDeclare 
+	(sf_image * img, 
+	const char * ccp_pathToImage, const sf_bool bl_smoothImage,
+	sf_color clr_spr, const sf_bool bl_centerSpr,
 	const float cflt_resizeWidth, const float cflt_resizeHeight)
-/* The sfImage * used in this function is not exclusive to the
- * sfSprite * declared and you should re-use it for all the other
+/* The sf_image * used in this function is not exclusive to the
+ * sf_sprite * declared and you should re-use it for all the other
  * declarations made with this function.
  * Don't forget to free it once declared sprites are no longer needed */
 /* RESIZING SPRITES IS NOT GOOD FOR COLLISION */
@@ -260,18 +260,18 @@ inline sfSprite * sfSyS_sfSpriteDeclare
 	
 	sfImage_SetSmooth (img, bl_smoothImage);
 	
-	sfSprite * spr = sfSprite_Create ();
+	sf_sprite * spr = sfSprite_Create ();
 	sfSprite_SetImage (spr, img);
-	sfSprite_SetColor (spr, sfWhite); sfSprite_SetColor (spr, clr_spr);
+	sfSprite_SetColor (spr, sf_white); sfSprite_SetColor (spr, clr_spr);
 	//Resize only happens when strictly positive arguments:
 	sfSprite_Resize (spr, cflt_resizeWidth, cflt_resizeHeight);
 	
 	if (bl_centerSpr)
 	{
 		//~ /* IS THIS PROBLEMATIC? */ /* YES IT IS */
-		//~ if ((resizeWidth > 0) && (resizeHeight > 0))
+		//~ if ((resize_width > 0) && (resize_height > 0))
 			//~ sfSprite_SetCenter (sprite, 
-				//~ resizeWidth / 2, resizeHeight / 2);
+				//~ resize_width / 2, resize_height / 2);
 		//~ else
 		sfSprite_SetCenter (spr, 
 			sfImage_GetWidth (img) / 2.f, sfImage_GetHeight (img) / 2.f);
@@ -281,7 +281,7 @@ inline sfSprite * sfSyS_sfSpriteDeclare
 }
 
 void sfSyS_sfSpritePrintPosAndCenter
-	(sfSprite * sfsprite, const char * strNameOfSfstring)
+	(sf_sprite * sfsprite, const char * str_name_of_sfstring)
 {
 	printf ("\tDimension of %s: %5d, %5d.\n", strNameOfSfstring,
 		(int)sfSprite_GetWidth (sfsprite), (int)sfSprite_GetHeight (sfsprite) );
@@ -293,7 +293,7 @@ void sfSyS_sfSpritePrintPosAndCenter
 
 
 inline sfUint8 sfSyS_sfSpriteAlphaIncDec
-	(sfSprite * sprite, int intensity,
+	(sf_sprite * sprite, int intensity,
 	const int min, const int max)
 /* Returns uint alpha after modification */
 {
@@ -325,27 +325,27 @@ inline sfUint8 sfSyS_sfSpriteAlphaIncDec
 };
 
 void sfSyS_sfSpriteColorIncDec
-	(sfSprite * sprite,
-	const int redIncreaseIntensity, 
-	const int greenIncreaseIntensity, 
-	const int blueIncreaseIntensity,
-	const int alphaIncreaseIntensity)
+	(sf_sprite * sprite,
+	const int red_increase_intensity, 
+	const int green_increase_intensity, 
+	const int blue_increase_intensity,
+	const int alpha_increase_intensity)
 /* INTENSITIES MUST BE MULTIPLE OF 5 (TO REACH EXACTLY 255)
  * OMG THE WORLD IS SO WRONG SOMETIMES!!111§!!!111 */
 {
 //////////////////////////////////* !!!!!ALGORYTHM NOT OPTIMISED!!!!! */
 	int red = (sfSprite_GetColor (sprite).r);
 		if ( (red != 255) || (red != 0) )
-			red = red + redIncreaseIntensity;
+			red = red + red_increase_intensity;
 	int green = (sfSprite_GetColor (sprite).g);
 		if ( (green != 255) || (green != 0) )
-			green = green + greenIncreaseIntensity;
+			green = green + green_increase_intensity;
 	int blue = (sfSprite_GetColor (sprite).b);
 		if ( (blue != 255) || (blue != 0) )
-			blue = blue + blueIncreaseIntensity;
+			blue = blue + blue_increase_intensity;
 	int alpha = (sfSprite_GetColor (sprite).a);
 		if ( (alpha != 255) || (alpha != 0) )
-			alpha = alpha + alphaIncreaseIntensity;
+			alpha = alpha + alpha_increase_intensity;
 	
 	sfSprite_SetColor (sprite, sfColor_FromRGBA (red,green,blue,alpha));
 };
@@ -353,37 +353,37 @@ void sfSyS_sfSpriteColorIncDec
 
 char sfSyS_sfSpriteAreWeInside 
 	(const float cflt_globalX, const float cflt_globalY, 
-	sfSprite * spriteToTest,
-	const float widthSpriteToTest, const float heightSpriteToTest)
+	sf_sprite * sprite_to_test,
+	const float width_sprite_to_test, const float height_sprite_to_test)
 /* Returns:
  * 		'y' if Yes, in da sprite
  * 		'n' if Na, nat in da sprite
  * 		't' if in da sprite and it's Transparent */
 {
-	float localCoordXToTest = 0.f, localCoordYToTest = 0.f;
+	float local_coord_x_to_test = 0.f, local_coord_y_to_test = 0.f;
 	sfSprite_TransformToLocal 
-		(spriteToTest, 
+		(sprite_to_test, 
 		cflt_globalX, cflt_globalY,
-		&localCoordXToTest, &localCoordYToTest);
+		&local_coord_x_to_test, &local_coord_y_to_test);
 	
-	if ((0.f <= localCoordXToTest) && (localCoordXToTest < widthSpriteToTest))
-	{	if ((0.f <= localCoordYToTest) && (localCoordYToTest < heightSpriteToTest))
+	if ((0.f <= local_coord_x_to_test) && (local_coord_x_to_test < width_sprite_to_test))
+	{	if ((0.f <= local_coord_y_to_test) && (local_coord_y_to_test < height_sprite_to_test))
 		{	if (
 				(sfSprite_GetPixel 
-					(spriteToTest, 
-					(unsigned int) localCoordXToTest, (unsigned int) localCoordYToTest)
+					(sprite_to_test, 
+					(unsigned int) local_coord_x_to_test, (unsigned int) local_coord_y_to_test)
 				).a == 0
 				)
 				goto weAreInDaSpriteAndItsAlphaIsZero;
 			else
-				goto weAreInDaSprite;
+				goto we_are_in_da_sprite;
 		}
 	}
 	//weAreNOTInDaSprite:
 	//puts ("\t\tNot in da sprite!");
 	return 'n';
 	
-	weAreInDaSprite:
+	we_are_in_da_sprite:
 	//puts ("\t\tIn da sprite!");
 	return 'y';
 	
@@ -392,68 +392,68 @@ char sfSyS_sfSpriteAreWeInside
 	return 't';
 }
 
-sfBool sfSyS_sfSpritePutOnGroundProperly
-	(sfSprite * spriteToPutOnTheGround,
-	sfSprite * spriteToTest, 
-	const float widthSpriteToTest, const float heightSpriteToTest,
-	const sfFloatRect viewFloatRect, const sfBool caringAboutTheView)
+sf_bool sfSyS_sfSpritePutOnGroundProperly
+	(sf_sprite * sprite_to_put_on_the_ground,
+	sf_sprite * sprite_to_test, 
+	const float width_sprite_to_test, const float height_sprite_to_test,
+	const sf_float_rect view_float_rect, const sf_bool caring_about_the_view)
 {
 	float flt_globalX = 
-		sfSprite_GetX (spriteToPutOnTheGround);
+		sfSprite_GetX (sprite_to_put_on_the_ground);
 	float flt_globalY = 
-		sfSprite_GetY (spriteToPutOnTheGround);
+		sfSprite_GetY (sprite_to_put_on_the_ground);
 	
-	char * initialPixelState = malloc (sizeof(char));
-	* initialPixelState = sfSyS_sfSpriteAreWeInside 
+	char * initial_pixel_state = malloc (sizeof(char));
+	* initial_pixel_state = sfSyS_sfSpriteAreWeInside 
 			(flt_globalX, 
 			flt_globalY,
-			spriteToTest,
-			widthSpriteToTest, heightSpriteToTest);
+			sprite_to_test,
+			width_sprite_to_test, height_sprite_to_test);
 	
-	char pixelStateYToReach;
+	char pixel_state_y_to_reach;
 	int direction = 1;
 	
-	if (*initialPixelState == 'y')
+	if (*initial_pixel_state == 'y')
 	{
 		/* means sprite is below surface of the ground */
-		pixelStateYToReach = sfFalse;
+		pixel_state_y_to_reach = sf_false;
 		direction = - direction;
 	}
 	else
 	{
 		/* means sprite is above surface of the ground */
-		pixelStateYToReach = sfTrue;
+		pixel_state_y_to_reach = sf_true;
 	}
 	
-	free (initialPixelState);
+	free (initial_pixel_state);
 	
 	for (;;)
 	{
-		char areWeInDaSprite = sfSyS_sfSpriteAreWeInside 
+		char are_we_in_da_sprite = sfSyS_sfSpriteAreWeInside 
 				(flt_globalX, 
 				flt_globalY,
-				spriteToTest,
-				widthSpriteToTest, heightSpriteToTest);
+				sprite_to_test,
+				width_sprite_to_test, height_sprite_to_test);
 		
 		
-		if ((pixelStateYToReach) && areWeInDaSprite == 'y')
+		if ((pixel_state_y_to_reach) && are_we_in_da_sprite == 'y')
 			break;
-		else if ((pixelStateYToReach == sfFalse) && areWeInDaSprite != 'y')
+		else if ((pixel_state_y_to_reach == sf_false) && are_we_in_da_sprite != 'y')
 			break;
 		
-		if (! caringAboutTheView)
-			goto jumpingViewChecking;
+		if (! caring_about_the_view)
+			goto jumping_view_checking;
 		
-		if ( ! sfSyS_sfViewAreYouInside (viewFloatRect, 
+		if ( ! sfSyS_sfViewAreYouInside (view_float_rect, 
 			flt_globalX, flt_globalY) )
-					goto outOfTheView;
+					goto out_of_the_view;
 		else
 		{
-			jumpingViewChecking:
-			sfSprite_Move (spriteToPutOnTheGround, 
+			jumping_view_checking:
+			sfSprite_Move (sprite_to_put_on_the_ground, 
 										0., (float) direction);
-			flt_globalX = sfSprite_GetX (spriteToPutOnTheGround);
-			flt_globalY = sfSprite_GetY (spriteToPutOnTheGround);
+			flt_globalX = sfSprite_GetX (sprite_to_put_on_the_ground);
+			flt_globalY = sfSprite_GetY (sprite_to_put_on_the_ground);
 			//printf ("\t\tPixel sprite being tested: %f, %f.\n", 
 				//flt_globalX, flt_globalY);			
 		}
@@ -463,85 +463,85 @@ sfBool sfSyS_sfSpritePutOnGroundProperly
 	/* If sprite was below surface, it now is on a 't' (transparent) pixel,
 	 * which means it's in the air above a solid pixel; consequently,
 	 * you need to put it on that solid pixel */
-	if (pixelStateYToReach == sfFalse)
-		sfSprite_Move (spriteToPutOnTheGround, 0., (float) -direction);
+	if (pixel_state_y_to_reach == sf_false)
+		sfSprite_Move (sprite_to_put_on_the_ground, 0., (float) -direction);
 	
 	
-	return sfTrue;
+	return sf_true;
 	
-	outOfTheView:
+	out_of_the_view:
 	//puts ("Can't put sprite on the ground: out of the view");
-	return sfFalse;
+	return sf_false;
 }
 
-sfBool sfSyS_sfSpritePutOnGroundFromBottom
-	(sfSprite * spriteToPutOnTheGround,
-	sfSprite * spriteToTest, 
-	const int widthSpriteToTest, const int heightSpriteToTest,
-	const sfFloatRect viewFloatRect, const sfBool caringAboutTheView)
+sf_bool sfSyS_sfSpritePutOnGroundFromBottom
+	(sf_sprite * sprite_to_put_on_the_ground,
+	sf_sprite * sprite_to_test, 
+	const int width_sprite_to_test, const int height_sprite_to_test,
+	const sf_float_rect view_float_rect, const sf_bool caring_about_the_view)
 {
-	sfSprite_SetY (spriteToPutOnTheGround, 
-		viewFloatRect.Bottom - 5);
+	sfSprite_SetY (sprite_to_put_on_the_ground, 
+		view_float_rect.Bottom - 5);
 	
-	sfBool returnedBool = 
+	sf_bool returned_bool = 
 		(sfSyS_sfSpritePutOnGroundProperly
-			(spriteToPutOnTheGround,
-			spriteToTest,
-			widthSpriteToTest, heightSpriteToTest,
-			viewFloatRect, caringAboutTheView)	);
+			(sprite_to_put_on_the_ground,
+			sprite_to_test,
+			width_sprite_to_test, height_sprite_to_test,
+			view_float_rect, caring_about_the_view)	);
 	
-	return returnedBool;
+	return returned_bool;
 }
 
 
-sfBool sfSyS_sfSpriteAnimate 
-	(sfSprite * * sprite, const char * directionOfTheLastMove, 
-	char * beginningOfPathToImage, int * currentAnimationStep, 
-	const int maxNumberOfAnimationStep, sfBool bl_smoothImage, 
-	sfBool timeToChangeAnimationSprite)
-/* Reads directionOfTheLastMove provided by *_DirectionOfTheLastMove and iterates in the series of animation images accordingly
+sf_bool sfSyS_sfSpriteAnimate 
+	(sf_sprite * * sprite, const char * direction_of_the_last_move, 
+	char * beginning_of_path_to_image, int * current_animation_step, 
+	const int max_number_of_animation_step, sf_bool bl_smoothImage, 
+	sf_bool time_to_change_animation_sprite)
+/* Reads direction_of_the_last_move provided by *_DirectionOfTheLastMove and iterates in the series of animation images accordingly
  *
  * e.g.:
- * 		char * pathTI = "Sprite walking "
- * 		switch (directionOTLM)
+ * 		char * path_t_i = "Sprite walking "
+ * 		switch (direction_o_t_l_m)
  * 			case 'u':
- * 				pathTI = "Sprite walking up"
+ * 				path_t_i = "Sprite walking up"
  * 				break;
  * 			case ...
  * 		
- * 		currentAnimationStep++;
- * 		if currentAnimationStep > maxNumberOfAnimationStep
- * 			currentAnimationStep = 1;
+ * 		current_animation_step++;
+ * 		if current_animation_step > max_number_of_animation_step
+ * 			current_animation_step = 1;
  * 		
- * 		pathTI = "Lucas walking down %d.png", cSOA
+ * 		path_t_i = "Lucas walking down %d.png", c_s_o_a
  * 
- * 		sfSprite_SetImage (sprite, pathTI);
+ * 		sfSprite_SetImage (sprite, path_t_i);
  * 		 */
 {
-	if ( ! timeToChangeAnimationSprite)
+	if ( ! time_to_change_animation_sprite)
 		puts ("\t\t\tIt's not time to change anim sprite, bro."); return sfFalse;
 	
-	if (strcmp (directionOfTheLastMove, "\0") == 0)
+	if (strcmp (direction_of_the_last_move, "\0") == 0)
 		puts ("\t\t\tSprite unchanged."); return sfFalse;
 	
-	char * pathToImage  = malloc ((strlen(beginningOfPathToImage) + strlen(" xx 0.png")) * sizeof(char)); 
-	char numberOfFrameAndDotPng [6];
+	char * path_to_image  = malloc ((strlen(beginning_of_path_to_image) + strlen(" xx 0.png")) * sizeof(char)); 
+	char number_of_frame_and_dot_png [6];
 	/* strlen(" 0.png") == 6 */
 	
 	
 	printf ("\t\t\tdOTLM: \"%s\"\n", directionOfTheLastMove);
 	
 	
-	strcpy (pathToImage, beginningOfPathToImage);
-	strcat (pathToImage, " ");
-	strcat (pathToImage, directionOfTheLastMove);
+	strcpy (path_to_image, beginning_of_path_to_image);
+	strcat (path_to_image, " ");
+	strcat (path_to_image, direction_of_the_last_move);
 	
 	
-	*currentAnimationStep = *currentAnimationStep % maxNumberOfAnimationStep;
-	*currentAnimationStep = *currentAnimationStep + 1;	
+	*current_animation_step = *current_animation_step % max_number_of_animation_step;
+	*current_animation_step = *current_animation_step + 1;	
 	
 	sprintf (numberOfFrameAndDotPng, " %d.png", *currentAnimationStep);
-	strcat (pathToImage, numberOfFrameAndDotPng);
+	strcat (path_to_image, number_of_frame_and_dot_png);
 	/* ^ DUNNO WHY BUT DOTLM AND NOFADP ARE THE SAME AFTER THAT */
 	
 	
@@ -550,9 +550,9 @@ sfBool sfSyS_sfSpriteAnimate
 	
 	
 	printf ("\t\t\tpathToImage: \"%s\", currentAnimationStep: %d\n", pathToImage,
-		*currentAnimationStep);
+		*current_animation_step);
 	
-	sfImage * image = sfImage_CreateFromFile (pathToImage);
+	sf_image * image = sfImage_CreateFromFile (path_to_image);
 	if (! image)
 		puts ("\t\t\tPath no good :("); return sfFalse;
 	
@@ -560,65 +560,65 @@ sfBool sfSyS_sfSpriteAnimate
 	sfSprite_SetImage (*sprite, image);
 	puts ("\t\t\tSprite has been changed.");
 	
-	free (pathToImage);
+	free (path_to_image);
 	
-	return sfTrue;
+	return sf_true;
 }
 
 
 
 
-/* sfShape-related */
+/* sf_shape-related */
 
-sfShape * sfSyS_sfShapeCircleDeclaration
-	(const float fltCenterX, const float fltCenterY,
-	const float fltRadius,
-	sfColor colorFill,
-	float fltOutlineThickness,
-	sfColor colorOutline,
-	const sfBool boolEnableFill, const sfBool boolEnableOutline,
-	const sfBool boolCenterSpriteOnItself,
-	const float fltScaleX, const float fltScaleY)
+sf_shape * sfSyS_sfShapeCircleDeclaration
+	(const float flt_center_x, const float flt_center_y,
+	const float flt_radius,
+	sf_color color_fill,
+	float flt_outline_thickness,
+	sf_color color_outline,
+	const sf_bool bool_enable_fill, const sf_bool bool_enable_outline,
+	const sf_bool bool_center_sprite_on_itself,
+	const float flt_scale_x, const float flt_scale_y)
 /* BE CAREFUL WITH COLORS, OUTLINE AND SHIT */
 {
-	sfShape * shape = sfShape_Create ();
-	if (boolEnableOutline)
+	sf_shape * shape = sfShape_Create ();
+	if (bool_enable_outline)
 	{	shape = sfShape_CreateCircle 
-			(0.f, 0.f, fltRadius, colorFill, 
-			fltOutlineThickness, colorOutline);
+			(0.f, 0.f, flt_radius, color_fill, 
+			flt_outline_thickness, color_outline);
 	}
 	else
 	{	shape = sfShape_CreateCircle 
-			(0.f, 0.f, fltRadius, sfWhite, 
-			fltOutlineThickness, colorOutline);
-		sfShape_SetColor (shape, colorFill);
+			(0.f, 0.f, flt_radius, sf_white, 
+			flt_outline_thickness, color_outline);
+		sfShape_SetColor (shape, color_fill);
 	}
-	sfShape_SetPosition 	(shape, fltCenterX, fltCenterY);
-	sfShape_EnableFill 		(shape, boolEnableFill);
-	sfShape_EnableOutline 	(shape, boolEnableOutline);
-	//if (boolCenterSpriteOnItself)
+	sfShape_SetPosition 	(shape, flt_center_x, flt_center_y);
+	sfShape_EnableFill 		(shape, bool_enable_fill);
+	sfShape_EnableOutline 	(shape, bool_enable_outline);
+	//if (bool_center_sprite_on_itself)
 		//automatically done lol
-	sfShape_SetScale (shape, fltScaleX, fltScaleY);
+	sfShape_SetScale (shape, flt_scale_x, flt_scale_y);
 	
 	return shape;
 }
 
-sfShape * * sfSyS_sfShapeCircleSmoothDeclare
-	(const int cint_arrSize, const float fltRatioConcentricCirlces,
-	const float fltCenterX, const float fltCenterY,
-	float fltRadiusFill, sfColor colorFill,
-	sfBool boolEnableFill,
-	const sfBool boolCenterSpriteOnItself,
-	const float fltScaleX, const float fltScaleY)
-/* sfShape * arrays from smallest circle to biggest circle */
+sf_shape * * sfSyS_sfShapeCircleSmoothDeclare
+	(const int cint_arrSize, const float flt_ratio_concentric_cirlces,
+	const float flt_center_x, const float flt_center_y,
+	float flt_radius_fill, sf_color color_fill,
+	sf_bool bool_enable_fill,
+	const sf_bool bool_center_sprite_on_itself,
+	const float flt_scale_x, const float flt_scale_y)
+/* sf_shape * arrays from smallest circle to biggest circle */
 /* First, creates the base shape with fill and no outline,
  * then creates circles with outline only */
 {
-	sfShape * * shapeCircleSmooth 
-		= malloc (cint_arrSize * sizeof (sfShape *) );
+	sf_shape * * shape_circle_smooth 
+		= malloc (cint_arrSize * sizeof (sf_shape *) );
 	//
-	float fltOutlineThickness = 0.f;
-	sfBool boolEnableOutline = sfFalse;
+	float flt_outline_thickness = 0.f;
+	sf_bool bool_enable_outline = sf_false;
 	
 	//printf ("\nDeclaring an array of smooth circles.\nfltRatioConcentricCirlces: %.2f\t", fltRatioConcentricCirlces);
 	int i; for (i = 0; i < cint_arrSize; i++)
@@ -626,121 +626,121 @@ sfShape * * sfSyS_sfShapeCircleSmoothDeclare
 		//printf ("i: %d, ", i);
 		//
 		//printf ("Outline width: %.2f\t", fltRatioConcentricCirlces);
-		*(shapeCircleSmooth + i) = sfSyS_sfShapeCircleDeclaration
-			(fltCenterX, fltCenterY,
-			fltRadiusFill, colorFill,
-			fltOutlineThickness, colorFill,
-			boolEnableFill, boolEnableOutline,
-			boolCenterSpriteOnItself,
-			fltScaleX, fltScaleY);
+		*(shape_circle_smooth + i) = sfSyS_sfShapeCircleDeclaration
+			(flt_center_x, flt_center_y,
+			flt_radius_fill, color_fill,
+			flt_outline_thickness, color_fill,
+			bool_enable_fill, bool_enable_outline,
+			bool_center_sprite_on_itself,
+			flt_scale_x, flt_scale_y);
 		
-		boolEnableFill = sfFalse;
-		boolEnableOutline = sfTrue;
+		bool_enable_fill = sf_false;
+		bool_enable_outline = sf_true;
 		//
-		colorFill = sfColor_FromRGBA (
-			(colorFill.r),
-			(colorFill.g),
-			(colorFill.b), 
-			(colorFill.a / (i+1) ) );
+		color_fill = sfColor_FromRGBA (
+			(color_fill.r),
+			(color_fill.g),
+			(color_fill.b), 
+			(color_fill.a / (i+1) ) );
 		//printf ("alpha: %d.\t", (sfShape_GetPointOutlineColor (shapeCircleSmooth[0], 0)).a / (i+1) );
 		//
-		fltOutlineThickness 
-			= (fltRadiusFill * pow(fltRatioConcentricCirlces, i+1) ) - fltRadiusFill;
+		flt_outline_thickness 
+			= (flt_radius_fill * pow(flt_ratio_concentric_cirlces, i+1) ) - flt_radius_fill;
 		// ^ pow() NEED <math.h>
 	}
 	//puts ("");
-	return shapeCircleSmooth;
+	return shape_circle_smooth;
 }
 
-sfShape * * sfSyS_sfShapeCircleSmoothDeclareWithOutline
-	(const int int_arrSize, const float fltRatioConcentricCirlces,
-	const float fltCenterX, const float fltCenterY,
-	float fltRadius,
-	sfColor colorFill,
-	float fltOutlineThickness,
-	sfColor colorOutline,
-	const sfBool boolEnableFill,
-	const sfBool boolCenterSpriteOnItself,
-	const float fltScaleX, const float fltScaleY)
+sf_shape * * sfSyS_sfShapeCircleSmoothDeclareWithOutline
+	(const int int_arrSize, const float flt_ratio_concentric_cirlces,
+	const float flt_center_x, const float flt_center_y,
+	float flt_radius,
+	sf_color color_fill,
+	float flt_outline_thickness,
+	sf_color color_outline,
+	const sf_bool bool_enable_fill,
+	const sf_bool bool_center_sprite_on_itself,
+	const float flt_scale_x, const float flt_scale_y)
 {
-	sfShape * * shapeCircleSmooth = malloc (int_arrSize * sizeof (sfShape *) );
+	sf_shape * * shape_circle_smooth = malloc (int_arrSize * sizeof (sf_shape *) );
 	
 	if (int_arrSize > 1)
-		(shapeCircleSmooth) = sfSyS_sfShapeCircleSmoothDeclare
-			(int_arrSize, fltRatioConcentricCirlces,
-			fltCenterX, fltCenterY,
-			fltRadius + fltOutlineThickness, colorOutline,
-			boolEnableFill,
-			boolCenterSpriteOnItself,
-			fltScaleX, fltScaleY);
+		(shape_circle_smooth) = sfSyS_sfShapeCircleSmoothDeclare
+			(int_arrSize, flt_ratio_concentric_cirlces,
+			flt_center_x, flt_center_y,
+			flt_radius + flt_outline_thickness, color_outline,
+			bool_enable_fill,
+			bool_center_sprite_on_itself,
+			flt_scale_x, flt_scale_y);
 	//
-	*(shapeCircleSmooth) = sfSyS_sfShapeCircleDeclaration
-		(fltCenterX, fltCenterY,
-		fltRadius, colorFill,
-		0.f, colorOutline,
-		boolEnableFill, sfTrue,
-		boolCenterSpriteOnItself,
-		fltScaleX, fltScaleY);
+	*(shape_circle_smooth) = sfSyS_sfShapeCircleDeclaration
+		(flt_center_x, flt_center_y,
+		flt_radius, color_fill,
+		0.f, color_outline,
+		bool_enable_fill, sf_true,
+		bool_center_sprite_on_itself,
+		flt_scale_x, flt_scale_y);
 	
 	puts ("");
-	return shapeCircleSmooth;
+	return shape_circle_smooth;
 }
 
-sfShape * sfSyS_sfShapeRectOrLineDeclare
-	(const char charTypeOfShape,
+sf_shape * sfSyS_sfShapeRectOrLineDeclare
+	(const char char_type_of_shape,
 	float P1X, float P1Y, float P2X, float P2Y,
-	const float fltThickness,
-	sfColor colorFill,
-	float fltOutlineThickness,
-	sfColor colorOutline,
-	const sfBool boolEnableFill, const sfBool boolEnableOutline,
-	const sfBool boolCenterSpriteOnItself,
-	const float fltScaleX, const float fltScaleY)
+	const float flt_thickness,
+	sf_color color_fill,
+	float flt_outline_thickness,
+	sf_color color_outline,
+	const sf_bool bool_enable_fill, const sf_bool bool_enable_outline,
+	const sf_bool bool_center_sprite_on_itself,
+	const float flt_scale_x, const float flt_scale_y)
 /* FOR BETTER RESULTS, PUT THE CENTER AT 0;0 WHEN YOU CREATE THE SHAPE, AND THEN DO YA THINGS */
-/* 2013/11/14: changed the coloring method (colorFill to sfWhite THEN colorFill) */
+/* 2013/11/14: changed the coloring method (color_fill to sf_white THEN color_fill) */
 {
-	sfShape * shape = sfShape_Create ();
+	sf_shape * shape = sfShape_Create ();
 	
-	switch (charTypeOfShape)
+	switch (char_type_of_shape)
 	{
 		case 'r':
 			//shape = sfShape_CreateRectangle
 				//( P1X, P1Y, P2X, P2Y, 
-				//colorFill, fltOutlineThickness, colorOutline);
+				//color_fill, flt_outline_thickness, color_outline);
 			shape = sfShape_CreateRectangle
 				( P1X, P1Y, P2X, P2Y, 
-				sfWhite, fltOutlineThickness, colorOutline);
-			sfShape_SetColor (shape, colorFill);
+				sf_white, flt_outline_thickness, color_outline);
+			sfShape_SetColor (shape, color_fill);
 			break;
 		case 'l':
 			//shape = sfShape_CreateLine
 				//( P1X, P1Y, P2X, P2Y, 
-				//fltThickness, colorFill,
-				//fltOutlineThickness, colorOutline);
+				//flt_thickness, color_fill,
+				//flt_outline_thickness, color_outline);
 			shape = sfShape_CreateLine
 				( P1X, P1Y, P2X, P2Y, 
-				fltThickness, sfWhite,
-				fltOutlineThickness, colorOutline);
-			sfShape_SetColor (shape, colorFill);
+				flt_thickness, sf_white,
+				flt_outline_thickness, color_outline);
+			sfShape_SetColor (shape, color_fill);
 			break;
 		default:
 			puts ("\tcharTypeOfShape IS NOT A VALID ONE, BITCHES.");
 			return NULL;
 	}
 	
-	sfShape_EnableFill (shape, boolEnableFill);
-	sfShape_EnableOutline (shape, boolEnableOutline);
-	if (boolCenterSpriteOnItself)
+	sfShape_EnableFill (shape, bool_enable_fill);
+	sfShape_EnableOutline (shape, bool_enable_outline);
+	if (bool_center_sprite_on_itself)
 		sfShape_SetCenter ( shape, 
 			(P2X / 2.f), (P2Y / 2.f) );
 	sfShape_SetScale (shape, 
-		fltScaleX, fltScaleY);
+		flt_scale_x, flt_scale_y);
 	
 	return shape;
 }
 
 inline sfUint8 sfSyS_sfShapeAlphaIncDec 
-	(sfShape * shape, int intensity,
+	(sf_shape * shape, int intensity,
 	const int min, const int max)
 /* Returns uint alpha after modification */
 {
@@ -775,18 +775,18 @@ inline sfUint8 sfSyS_sfShapeAlphaIncDec
 
 
 ///* WHY THIS FUNCTION IS USELESS *///
-/* 		When creating a sfShape, the color set when creating it with sfShape_Create* ()
- * 		is multiplied by sfWhite to produce the final RGBA values.
- * 		So if you sfShape_Create* () a sfRed shape, all its RGBA values will be 255 (INCLUDING ALPHA)
- * 		but the actual visible color of the shape will be sfRed, like a sfWhite red sprite. */
+/* 		When creating a sf_shape, the color set when creating it with sfShape_Create* ()
+ * 		is multiplied by sf_white to produce the final RGBA values.
+ * 		So if you sfShape_Create* () a sf_red shape, all its RGBA values will be 255 (INCLUDING ALPHA)
+ * 		but the actual visible color of the shape will be sf_red, like a sf_white red sprite. */
 /* 		As a consequence, fading them -in and -out is actually very simple as
  * 		you don't have to worry about the Alpha value of each layer individually.
  * 		WHAT A WANDERFAL WARLD!!!!!!!! */
 //sfUint8 sfSyS_sfShapeCircleSmoothAlphaIncDec 
-	//(sfShape * * shp_circleSmooth, int shrt_arraySize,
+	//(sf_shape * * shp_circleSmooth, int shrt_arraySize,
 	//const sfUint8 sfuint8_intensity,
 	//int shrt_minTopLayer, int shrt_maxTopLayer,
-	//const sfBool bl_hasOutline,
+	//const sf_bool bl_hasOutline,
 	//const int cshrt_minOutLayer, const int cshrt_maxOutLayer)
 ///* The top layer being the first, we use a reverse for loop */
 ///* If no outline, alpha values for out(line) layers are set to < 0 */
@@ -824,38 +824,38 @@ inline sfUint8 sfSyS_sfShapeAlphaIncDec
 //}
 
 inline void sfSyS_sfShapeCircleSmoothDraw 
-	(sfRenderWindow * windowMain, sfShape * * shapeCircleSmooth, const int int_arrSize)
+	(sf_render_window * window_main, sf_shape * * shape_circle_smooth, const int int_arrSize)
 {
 	int i;
 	for (i = (int_arrSize - 1); i >= 0; i--)
-		sfRenderWindow_DrawShape (windowMain, *(shapeCircleSmooth + i));
+		sfRenderWindow_DrawShape (window_main, *(shape_circle_smooth + i));
 }
 
 inline void sfSyS_sfShapeCircleSmoothMove
-	(sfShape * * shapeCircleSmooth, int int_arrSize,
-	 float fltOffsetX, float fltOffsetY)
+	(sf_shape * * shape_circle_smooth, int int_arrSize,
+	 float flt_offset_x, float flt_offset_y)
 {
 	int i;
 	for (i = (int_arrSize - 1); i >= 0; i--)
 		sfShape_Move 
-			(shapeCircleSmooth [i],
-			fltOffsetX, fltOffsetY);
+			(shape_circle_smooth [i],
+			flt_offset_x, flt_offset_y);
 }
 
 inline void sfSyS_sfShapeCircleSmoothSetPosition
-	(sfShape * * shapeCircleSmooth, int int_arrSize,
+	(sf_shape * * shape_circle_smooth, int int_arrSize,
 	 float flt_X, float flt_Y)
 {
 	int i;
 	for (i = (int_arrSize - 1); i >= 0; i--)
 		sfShape_SetPosition 
-			(shapeCircleSmooth [i],
+			(shape_circle_smooth [i],
 			flt_X, flt_Y);
 }
 
 void sfSyS_sfShapeCircleSmoothSetColor
-	(sfShape * * shapeCircleSmooth, int int_arrSize,
-	sfColor color_new)
+	(sf_shape * * shape_circle_smooth, int int_arrSize,
+	sf_color color_new)
 {
 	int int_red = color_new.r;
 	int int_green = color_new.g;
@@ -864,46 +864,46 @@ void sfSyS_sfShapeCircleSmoothSetColor
 	int i; 
 	for (i = (int_arrSize - 1); i >= 0; i--)
 		sfShape_SetColor 
-			( *(shapeCircleSmooth + i),
+			( *(shape_circle_smooth + i),
 			sfColor_FromRGBA 
 				(int_red,int_green,int_blue,
-				sfShape_GetColor (*(shapeCircleSmooth + i)).a )
+				sfShape_GetColor (*(shape_circle_smooth + i)).a )
 			);
 }
 
 
-/* sfString-related */
+/* sf_string-related */
 
-inline sfString * sfSyS_sfStringDeclare
-	(sfFont * font, const char * pathToFont, 
-	unsigned int uintCharSize, const sfUint32 * ptrUintCharset,
-	const char * strText, sfColor colorString,
-	const sfBool boolCenterSpriteOnItself,
-	const float fltScaleX, const float fltScaleY)
+inline sf_string * sfSyS_sfStringDeclare
+	(sf_font * font, const char * path_to_font, 
+	unsigned int uint_char_size, const sfUint32 * ptr_uint_charset,
+	const char * str_text, sf_color color_string,
+	const sf_bool bool_center_sprite_on_itself,
+	const float flt_scale_x, const float flt_scale_y)
 // ^^ Cause valgrind memcheck errors
 {
 	font = sfFont_CreateFromFile 
-			(pathToFont, uintCharSize, ptrUintCharset);
-	sfString * sfstr = sfString_Create ();
+			(path_to_font, uint_char_size, ptr_uint_charset);
+	sf_string * sfstr = sfString_Create ();
 	sfString_SetFont 	(sfstr, font);
-	sfString_SetSize 	(sfstr, uintCharSize);
-	sfString_SetColor 	(sfstr, colorString);
-	sfString_SetText 	(sfstr, strText);
+	sfString_SetSize 	(sfstr, uint_char_size);
+	sfString_SetColor 	(sfstr, color_string);
+	sfString_SetText 	(sfstr, str_text);
 	// ^^ Valgrind memcheck "Invalid read of size 8" x2
 	
-	if (boolCenterSpriteOnItself)
+	if (bool_center_sprite_on_itself)
 	{
-		sfFloatRect fltRectString = sfString_GetRect (sfstr);
+		sf_float_rect flt_rect_string = sfString_GetRect (sfstr);
 		//
 		sfString_SetCenter
 			(sfstr,
-			(fltRectString.Right - fltRectString.Left) / 2.f,
-			(fltRectString.Bottom - fltRectString.Top) / 2.f
+			(flt_rect_string.Right - flt_rect_string.Left) / 2.f,
+			(flt_rect_string.Bottom - flt_rect_string.Top) / 2.f
 			);
 	}
 	
 	sfString_SetScale 
-		(sfstr, fltScaleX, fltScaleY);
+		(sfstr, flt_scale_x, flt_scale_y);
 	
 	//printf ("\t\tCenter of created sfString: %f, %f\n",
 		//sfString_GetCenterX (sfstr), sfString_GetCenterY (sfstr));
@@ -911,28 +911,28 @@ inline sfString * sfSyS_sfStringDeclare
 }
 
 float sfSyS_sfStringGetHeight
-	(sfString * sfstr)
+	(sf_string * sfstr)
 {
-	sfFloatRect fltRectSfstring = sfString_GetRect (sfstr);
-	return (fltRectSfstring.Bottom - fltRectSfstring.Top);
+	sf_float_rect flt_rect_sfstring = sfString_GetRect (sfstr);
+	return (flt_rect_sfstring.Bottom - flt_rect_sfstring.Top);
 }
 
 float sfSyS_sfStringGetWidth
-	(sfString * sfstring)
+	(sf_string * sfstring)
 {
-	sfFloatRect fltRectSfstring = sfString_GetRect (sfstring);
-	return (fltRectSfstring.Right - fltRectSfstring.Left);
+	sf_float_rect flt_rect_sfstring = sfString_GetRect (sfstring);
+	return (flt_rect_sfstring.Right - flt_rect_sfstring.Left);
 }
 
 inline void sfSyS_sfStringCenter
-    (sfString * str)
+    (sf_string * str)
 {   sfString_SetCenter  (str,
         sfSyS_sfStringGetWidth  (str) / 2.f, 
         sfSyS_sfStringGetHeight (str) / 2.f);
 }
 
 void sfSyS_sfStringPrintPosAndCenter
-	(sfString * sfstring, const char * strNameOfSfstring)
+	(sf_string * sfstring, const char * str_name_of_sfstring)
 {
 	printf ("\tPosition of %s: %5d, %5d.\n", strNameOfSfstring,
 		(int)sfString_GetX (sfstring), (int)sfString_GetY (sfstring) );
@@ -941,7 +941,7 @@ void sfSyS_sfStringPrintPosAndCenter
 }
 
 inline sfUint8 sfSyS_sfStringAlphaIncDec 
-	(sfString * sfstring, int intensity,
+	(sf_string * sfstring, int intensity,
 	const int min, const int max)
 /* Returns uint alpha after modification */
 {
@@ -973,11 +973,11 @@ inline sfUint8 sfSyS_sfStringAlphaIncDec
 };
 
 
-/* sfSound-related */
+/* sf_sound-related */
 
-inline sfSound * sfSyS_sfSoundDeclare_sfSnd
-	(sfSoundBuffer * sndbuff, const char * str_pathToSound, 
-	const sfBool cbl_loop,
+inline sf_sound * sfSyS_sfSoundDeclare_sfSnd
+	(sf_sound_buffer * sndbuff, const char * str_pathToSound, 
+	const sf_bool cbl_loop,
 	const float cflt_pitch, const float cflt_vol)
 {
 	if ( ! str_pathToSound)
@@ -988,11 +988,11 @@ inline sfSound * sfSyS_sfSoundDeclare_sfSnd
 	if ( ! sndbuff)
 	{
 		puts ("\t\tDebug: Sound not found or not ready (be it intentional or not).\
-		\n\t\tDebug: Returning empty sfSound *.");
+		\n\t\t_debug: Returning empty sf_sound *.");
 		return sfSound_Create ();
 	}
 	
-	sfSound * snd = sfSound_Create ();
+	sf_sound * snd = sfSound_Create ();
 	sfSound_SetBuffer (snd, sndbuff);
 	sfSound_SetLoop (snd, cbl_loop);
 	sfSound_SetPitch (snd, cflt_pitch);
@@ -1009,21 +1009,21 @@ inline sfSound * sfSyS_sfSoundDeclare_sfSnd
 ///* Template *///
 
 /* ------------------------------------------------------------------ */
-inline sfBool sfSyS_IsItTimeToAnim
+inline sf_bool sfSyS_IsItTimeToAnim
     (double d_time, double * d_nextAnimTime)
 {
 	// IF FOR DEBUG PURPOSE ONLY
 	if (d_nextAnimTime != NULL)
 	{	if (d_time > (*d_nextAnimTime))
 		{	*(d_nextAnimTime) = d_time + D_ANIM_STEP_TIME;
-			return sfTrue;
+			return sf_true;
 		}
 	}
-	return sfFalse;
+	return sf_false;
 }
 
 
-//char * sfSyS_DirectionOfTheLastMove (sfInput * input, sfSprite ** sprite)
+//char * sfSyS_DirectionOfTheLastMove (sf_input * input, sf_sprite ** sprite)
 ///* Reads input and returns:
  //* 		"u" if has gone up
  //* 		"d" if has gone down
@@ -1039,13 +1039,13 @@ inline sfBool sfSyS_IsItTimeToAnim
 //{
 	//char direction [2] = "\0";
 	
-	//if (sfInput_IsKeyDown (input, sfKeyZ) || sfInput_IsKeyDown (input, sfKeyUp))
+	//if (sfInput_IsKeyDown (input, sf_key_z) || sfInput_IsKeyDown (input, sf_key_up))
 	//{
 		//sfSprite_Move (*sprite, 0., -2.);
 		//puts ("\t\tSprite has gone up!");
 		//strcat (direction, "u");
 	//}
-	//if (sfInput_IsKeyDown (input, sfKeyS) || sfInput_IsKeyDown (input, sfKeyDown))
+	//if (sfInput_IsKeyDown (input, sf_key_s) || sfInput_IsKeyDown (input, sf_key_down))
 	//{
 		//sfSprite_Move (*sprite, 0., 2.);
 		//puts ("\t\tSprite has gone down!");
@@ -1054,13 +1054,13 @@ inline sfBool sfSyS_IsItTimeToAnim
 		//else
 			//strcat (direction, "d");
 	//}
-	//if (sfInput_IsKeyDown (input, sfKeyQ) || sfInput_IsKeyDown (input, sfKeyLeft))
+	//if (sfInput_IsKeyDown (input, sf_key_q) || sfInput_IsKeyDown (input, sf_key_left))
 	//{
 		//sfSprite_Move (*sprite, -2., 0.);
 		//puts ("\t\tSprite has gone left!");
 		//strcat (direction, "l");
 	//}
-	//if (sfInput_IsKeyDown (input, sfKeyD) || sfInput_IsKeyDown (input, sfKeyRight))
+	//if (sfInput_IsKeyDown (input, sf_key_d) || sfInput_IsKeyDown (input, sf_key_right))
 	//{
 		//sfSprite_Move (*sprite, 2., 0.);
 		//puts ("\t\tSprite has gone right!");

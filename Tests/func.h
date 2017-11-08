@@ -15,41 +15,41 @@
 #define     I_JUAN_SPR_DANCE_ANIM_STEPS_TOTAL       2
 
 
-inline sfBool fnGame_IsItTimeToAnimCarlitaFeet
+inline sf_bool fnGame_IsItTimeToAnimCarlitaFeet
     (double d_time, double * d_nextAnimTime);
 
-inline sfBool fnGame_IsItTimeToAnimCarlitaSmile
+inline sf_bool fnGame_IsItTimeToAnimCarlitaSmile
     (double d_time, double * d_nextAnimTime);
 
 inline int fnGame_CarlitaAnimateSmile
-    (sfSprite * spr, sfIntRect * irect_spr, 
+    (sf_sprite * spr, sf_int_rect * irect_spr, 
     int * ip_animStep);
 
 inline int fnGame_CarlitaAnimateFeet
-    (sfSprite * spr, sfIntRect * irect_spr, 
+    (sf_sprite * spr, sf_int_rect * irect_spr, 
     int * ip_animStep);
 
-inline sfBool fnGame_IsItTimeToAnimJuanDance
+inline sf_bool fnGame_IsItTimeToAnimJuanDance
     (double d_time, double * d_nextAnimTime);
 
 inline int fnGame_JuanAnimateDance
-    (sfSprite * spr, sfIntRect * irect_spr, 
+    (sf_sprite * spr, sf_int_rect * irect_spr, 
     int * ip_animStep);
 
 inline void fnGame_JuanDoesNotDance
-    (sfSprite * spr, sfIntRect * irect_spr);
+    (sf_sprite * spr, sf_int_rect * irect_spr);
 
 inline void fnGame_PeopleLooksDown
-    (sfSprite * spr, sfIntRect * irect_spr);
+    (sf_sprite * spr, sf_int_rect * irect_spr);
 
 inline void fnGame_PeopleLooksUp
-    (sfSprite * spr, sfIntRect * irect_spr);
+    (sf_sprite * spr, sf_int_rect * irect_spr);
 
 inline void fnGame_ArrowPositive 
-    (sfSprite * spr, float f_health);
+    (sf_sprite * spr, float f_health);
     
 inline void fnGame_ArrowNegative
-    (sfSprite * spr, float f_health);
+    (sf_sprite * spr, float f_health);
 
 
 #endif

@@ -8,86 +8,86 @@
 
 
 char mod_TitleT 
-    (sfRenderWindow * windowMain, sfEvent * event, sfInput * input)
+    (sf_render_window * window_main, sf_event * event, sf_input * input)
 {
     puts ("Title module, Juan!");
     
     /* Usual variables */
-    char c_running = sfTrue;
-    const unsigned int      cui_renderWindowWidth     = sfRenderWindow_GetWidth (windowMain),
-                            cui_renderWindowHeight    = sfRenderWindow_GetHeight (windowMain);
+    char c_running = sf_true;
+    const unsigned int      cui_renderWindowWidth     = sfRenderWindow_GetWidth (window_main),
+                            cui_renderWindowHeight    = sfRenderWindow_GetHeight (window_main);
     
     /* MUSICA AMIGO!!! */
-    sfMusic * musica
+    sf_music * musica
         = sfMusic_CreateFromFile ("data/Dance of the Gypsy.oga");
-    sfMusic_SetLoop (musica, sfTrue);
+    sfMusic_SetLoop (musica, sf_true);
     sfMusic_Play (musica);
     
     
     /* Intro text */
-    sfFont * font = NULL;
-    sfString * str_intro 
+    sf_font * font = NULL;
+    sf_string * str_intro 
         = sfSyS_sfStringDeclare
             (font, "data/Isabella.ttf", 63,
-            NULL, "Juan impression\nJuan girl\nJuan Carlos",
+            NULL, "Juan impression\n_juan girl\n_juan Carlos",
             sfColor_FromRGBA (255,255,255,255), 
-            sfTrue, 0.8f, 0.8f);
+            sf_true, 0.8f, 0.8f);
     sfString_SetPosition (str_intro, 
         cui_renderWindowWidth / 2.f, cui_renderWindowHeight / 2.f);
     
     /* Title text */
-    sfString * str_title 
+    sf_string * str_title 
         = sfSyS_sfStringDeclare
             (font, "data/Isabella.ttf", 255,
             NULL, "Juan",
             sfColor_FromRGBA (255,255,255,255), 
-            sfTrue, 0.f, 0.f);
+            sf_true, 0.f, 0.f);
     sfString_SetPosition (str_title, 
         cui_renderWindowWidth / 2.f, cui_renderWindowHeight / 2.f);
-    char c_titleDisplay = sfFalse;
+    char c_titleDisplay = sf_false;
     
     /* Noise layer */
-    sfImage * img = NULL;
-    sfSprite * spr_noise 
+    sf_image * img = NULL;
+    sf_sprite * spr_noise 
         = sfSyS_sfSpriteDeclare 
-            (img, "data/noise.png", sfTrue, 
-            sfColor_FromRGBA (255,255,255, 196), sfFalse, 
+            (img, "data/noise.png", sf_true, 
+            sfColor_FromRGBA (255,255,255, 196), sf_false, 
             cui_renderWindowWidth, cui_renderWindowHeight);
-    sfSprite_SetBlendMode (spr_noise, sfBlendAdd);
+    sfSprite_SetBlendMode (spr_noise, sf_blend_add);
     
     while (c_running)
     {
-        while (sfRenderWindow_GetEvent (windowMain, event)
+        while (sfRenderWindow_GetEvent (window_main, event)
             && c_titleDisplay)
-        {   if ((*event).Type == sfEvtKeyReleased)
-                c_running = sfFalse;
+        {   if ((*event).Type == sf_evt_key_released)
+                c_running = sf_false;
         }
         
         
         sfString_Scale (str_intro, 1.001f, 1.001f);
         
         if (sfString_GetScaleX (str_intro) > 1.1f)
-        {   c_titleDisplay = sfTrue;
+        {   c_titleDisplay = sf_true;
         }
         
         
         ///* Drawing *///
         
-        if (c_titleDisplay == sfTrue)
-        {   sfRenderWindow_Clear (windowMain, sfColor_FromRGBA (164,32,32, 255));
-            sfRenderWindow_DrawSprite (windowMain, spr_noise);
-            sfRenderWindow_DrawString (windowMain, str_title);
+        if (c_titleDisplay == sf_true)
+        {   sfRenderWindow_Clear (window_main, sfColor_FromRGBA (164,32,32, 255));
+            sfRenderWindow_DrawSprite (window_main, spr_noise);
+            sfRenderWindow_DrawString (window_main, str_title);
         }
         else
-        {   sfRenderWindow_Clear (windowMain, sfColor_FromRGBA (163,98,33, 255));
-            sfRenderWindow_DrawSprite (windowMain, spr_noise);
-            sfRenderWindow_DrawString (windowMain, str_intro);
+        {   sfRenderWindow_Clear (window_main, sfColor_FromRGBA (163,98,33, 255));
+            sfRenderWindow_DrawSprite (window_main, spr_noise);
+            sfRenderWindow_DrawString (window_main, str_intro);
         }
-        sfRenderWindow_Display (windowMain);
+        sfRenderWindow_Display (window_main);
     }
     
-    // Empty sfEvent buffer before next module
-    while (sfRenderWindow_GetEvent (windowMain, event))     {}
+    // Empty sf_event buffer before next module
+    while (sfRenderWindow_GetEvent (window_main, event))     {}
     
     sfMusic_Stop (musica);
     
@@ -133,45 +133,45 @@ char mod_TitleT
 #define     I_NB_MUSIC_LAYERS                   2
 
 char mod_GameG 
-    (sfRenderWindow * windowMain, sfEvent * event, sfInput * input, double * d_score)
+    (sf_render_window * window_main, sf_event * event, sf_input * input, double * d_score)
 {
     puts ("Let's play, Juan!");
     
     /* Usual variables */
-    char c_running  = sfTrue;
+    char c_running  = sf_true;
     char c_nextMod  = 'R';
-    const unsigned int      cui_renderWindowWidth     = sfRenderWindow_GetWidth (windowMain),
-                            cui_renderWindowHeight    = sfRenderWindow_GetHeight (windowMain);
+    const unsigned int      cui_renderWindowWidth     = sfRenderWindow_GetWidth (window_main),
+                            cui_renderWindowHeight    = sfRenderWindow_GetHeight (window_main);
     int i;
     
-    sfImage * img = NULL;
+    sf_image * img = NULL;
     
     /* Playground */
-    sfSprite * spr_playground 
+    sf_sprite * spr_playground 
         = sfSyS_sfSpriteDeclare 
-            (img, "data/playground.jpg", sfTrue, 
-            sfWhite, sfFalse,
+            (img, "data/playground.jpg", sf_true, 
+            sf_white, sf_false,
             cui_renderWindowWidth, cui_renderWindowHeight);
-    sfSprite * spr_playgroundMask 
+    sf_sprite * spr_playgroundMask 
         = sfSyS_sfSpriteDeclare 
-            (img, "data/playground.mask.png", sfTrue, 
-            sfWhite, sfFalse, 
+            (img, "data/playground.mask.png", sf_true, 
+            sf_white, sf_false, 
             cui_renderWindowWidth, cui_renderWindowHeight);
     
     /* Juan */
-    sfSprite * spr_JuanCarlos
+    sf_sprite * spr_JuanCarlos
         = sfSyS_sfSpriteDeclare 
-            (img, "data/Juan.png", sfTrue, 
-            sfWhite, sfFalse, 0.f, 0.f);
+            (img, "data/Juan.png", sf_true, 
+            sf_white, sf_false, 0.f, 0.f);
     sfSprite_SetPosition (spr_JuanCarlos, 
         cui_renderWindowWidth / 2.f, cui_renderWindowHeight / 2.f);
     float f_JuanPositionXY [2] 
         = {sfSprite_GetX (spr_JuanCarlos), 
         sfSprite_GetY (spr_JuanCarlos)};
-    char c_JuanDancesNot    = sfFalse;
-    char c_JuanIsSoShameful = sfFalse;
+    char c_JuanDancesNot    = sf_false;
+    char c_JuanIsSoShameful = sf_false;
     float f_JuanHealth      = 2.f;
-    sfIntRect irect_JuanCarlos;
+    sf_int_rect irect_JuanCarlos;
     irect_JuanCarlos.Top    = 0;
     irect_JuanCarlos.Left   = 0;
     irect_JuanCarlos.Bottom = I_JUAN_SPR_WIDTH;
@@ -184,13 +184,13 @@ char mod_GameG
     double  d_JuanDanceAnimStep             = 0.0;
     
     //* Carlita *//
-    sfSprite * spr_Carlita
+    sf_sprite * spr_Carlita
         = sfSyS_sfSpriteDeclare 
-            (img, "data/Carlita.png", sfTrue, 
-            sfWhite, sfFalse, 0.f, 0.f);
+            (img, "data/Carlita.png", sf_true, 
+            sf_white, sf_false, 0.f, 0.f);
     sfSprite_SetPosition (spr_Carlita, 
         cui_renderWindowWidth / 2.f, cui_renderWindowHeight * .12f);
-    sfIntRect irect_CarlitaSpr;
+    sf_int_rect irect_CarlitaSpr;
     irect_CarlitaSpr.Top 		= 0;
     irect_CarlitaSpr.Left 	    = 0;
     irect_CarlitaSpr.Bottom 	= I_CARLITA_SPR_WIDTH;
@@ -205,13 +205,13 @@ char mod_GameG
     double  d_CarlitaAnimSmileStepTime      = 0.0;
     
     /* People */
-    sfSprite * * sprpX_people
-        = malloc (I_NB_PEOPLE *  sizeof (sfSprite *));
+    sf_sprite * * sprpX_people
+        = malloc (I_NB_PEOPLE *  sizeof (sf_sprite *));
     for (i = 0; i < I_NB_PEOPLE; i++)
     {   *(sprpX_people + i)
             = sfSyS_sfSpriteDeclare 
-                (img, "data/people.png", sfTrue, 
-                sfWhite, sfFalse, 0.f, 0.f);
+                (img, "data/people.png", sf_true, 
+                sf_white, sf_false, 0.f, 0.f);
         sfSprite_SetCenter (*(sprpX_people + i),
             I_PEOPLE_SPR_WIDTH / 2.f, I_PEOPLE_SPR_WIDTH * .15f);
         sfSprite_SetX (*(sprpX_people + i), 
@@ -229,7 +229,7 @@ char mod_GameG
         printf ("Debug: People %d position: %.0f %.0f\n", i,
             sfSprite_GetX (*(sprpX_people + i)), sfSprite_GetY (*(sprpX_people + i)));
     }
-    sfIntRect irect_people [I_NB_PEOPLE];
+    sf_int_rect irect_people [I_NB_PEOPLE];
     for (i = 0; i < I_NB_PEOPLE; i++)
     {   irect_people [i] . Top     = 0;
         irect_people [i] . Left    = 0;
@@ -242,33 +242,33 @@ char mod_GameG
     //* Sights *//
     /* Carlita */
     img = sfImage_CreateFromFile ("data/sight1600.png");
-    sfSprite * spr_CarlitaSight 
+    sf_sprite * spr_CarlitaSight 
         = sfSyS_sfSpriteDeclare 
-            (img, NULL, sfTrue, 
+            (img, NULL, sf_true, 
             sfColor_FromRGBA (163,33,98, 64), 
-            sfTrue, 0.f, 0.f);
+            sf_true, 0.f, 0.f);
     sfSprite_SetCenter (spr_CarlitaSight, 
         F_SIGHT_WIDTH, F_SIGHT_HEIGHT / 2.f);
     sfSprite_SetPosition (spr_CarlitaSight, 
         sfSprite_GetX (spr_Carlita), cui_renderWindowHeight * .05f);
     float f_CarlitaSightRotatOffset     = sfRandom_Float (F_CARLITA_SIGHT_ROTAT_OFFSET_MIN, F_CARLITA_SIGHT_ROTAT_OFFSET_MAX);
     if (sfRandom_Int (0, 1))            f_CarlitaSightRotatOffset *= -1;
-    char c_CarlitaLooksElsewhere        = sfTrue;
-    char c_CarlitaLooksAtJuan           = sfFalse;
+    char c_CarlitaLooksElsewhere        = sf_true;
+    char c_CarlitaLooksAtJuan           = sf_false;
     float f_CarlitaSightRotat           = sfRandom_Float (F_CARLITA_SIGHT_LIM_MIN, F_CARLITA_SIGHT_LIM_MAX);
     while ((f_CarlitaSightRotat > 80.f)   &&  (f_CarlitaSightRotat < 100.f))
     {   f_CarlitaSightRotat             = sfRandom_Float (F_CARLITA_SIGHT_LIM_MIN, F_CARLITA_SIGHT_LIM_MAX);
     }
     sfSprite_SetRotation (spr_CarlitaSight, f_CarlitaSightRotat);
     /* People */
-    sfSprite * * sprpX_peopleSight
-        = malloc (I_NB_PEOPLE *  sizeof (sfSprite *));
+    sf_sprite * * sprpX_peopleSight
+        = malloc (I_NB_PEOPLE *  sizeof (sf_sprite *));
     for (i = 0; i < I_NB_PEOPLE; i++)
     {   *(sprpX_peopleSight + i)
             = sfSyS_sfSpriteDeclare 
-                (img, NULL, sfTrue, 
+                (img, NULL, sf_true, 
                 sfColor_FromRGBA (255,255,255, 64), 
-                sfTrue, 0.f, 0.f);
+                sf_true, 0.f, 0.f);
         sfSprite_SetCenter (*(sprpX_peopleSight + i), 
             F_SIGHT_WIDTH, F_SIGHT_HEIGHT / 2.f);
         sfSprite_SetPosition ( *(sprpX_peopleSight + i), 
@@ -279,63 +279,63 @@ char mod_GameG
     char    ca_peopleLooksElsewhere         [I_NB_PEOPLE];
     float   fa_peopleSightRotatOffset       [I_NB_PEOPLE];
     for (i = 0; i < I_NB_PEOPLE; i++)
-    {   ca_peopleLooksElsewhere     [i] =         sfFalse;
+    {   ca_peopleLooksElsewhere     [i] =         sf_false;
         fa_peopleSightRotatOffset   [i] =         0.f;
     }
     
     /* Rose */
-    sfSprite * spr_rose
+    sf_sprite * spr_rose
         = sfSyS_sfSpriteDeclare
-            (img, "data/rose.png", sfTrue,
-            sfWhite, 
-            sfTrue, 0.f, 0.f);
+            (img, "data/rose.png", sf_true,
+            sf_white, 
+            sf_true, 0.f, 0.f);
     sfSprite_SetPosition (spr_rose,
         sfRandom_Float (.333f * cui_renderWindowWidth, cui_renderWindowWidth * .666f), 
         - ((float) cui_renderWindowHeight));
-    char c_roseFalls = sfFalse;
+    char c_roseFalls = sf_false;
     
     /* Arrow */
-    sfSprite * spr_arrow
+    sf_sprite * spr_arrow
         = sfSyS_sfSpriteDeclare
-            (img, "data/arrow.png", sfTrue,
+            (img, "data/arrow.png", sf_true,
             sfColor_FromRGB (96,200,63), 
-            sfFalse, 0.f, 0.f);
+            sf_false, 0.f, 0.f);
     sfSprite_SetPosition (spr_arrow,
         cui_renderWindowWidth * .0333f, cui_renderWindowHeight * .0333f);
-    sfSprite_FlipY (spr_arrow, sfTrue);
+    sfSprite_FlipY (spr_arrow, sf_true);
     // 0 is stable situation, 1 is good situation, -1 is bad situation
     char c_arrowState = 0;
     
     
     /* Intro text */
-    sfFont * font = NULL;
-    sfString * str_notice
+    sf_font * font = NULL;
+    sf_string * str_notice
         = sfSyS_sfStringDeclare
             (font, "data/Isabella.ttf", 64,
             NULL, "Hold spacebar not to dance!",
             sfColor_FromRGBA (255,255,255,127), 
-            sfTrue,
+            sf_true,
             0.f, 0.f);
     sfString_SetPosition (str_notice, 
         cui_renderWindowWidth / 2.f, cui_renderWindowHeight * .8f);
     
     /* Fader */
-    sfShape * shp_fader
+    sf_shape * shp_fader
         = sfSyS_sfShapeRectOrLineDeclare
             ('r',
             0.f, 0.f, cui_renderWindowWidth, cui_renderWindowHeight,
             0.f, sfColor_FromRGBA (0,0,0, 127),
-            0.f, sfGreen,
-            sfTrue, sfFalse,
-            sfFalse, 0.f, 0.f);
+            0.f, sf_green,
+            sf_true, sf_false,
+            sf_false, 0.f, 0.f);
     
     //* Music *//
     /* Lost game */
-    sfMusic * mus_gameLost
-        = sfMusic_CreateFromFile ("data/DotG - out of tune sound effect.oga");
+    sf_music * mus_gameLost
+        = sfMusic_CreateFromFile ("data/dot_g - out of tune sound effect.oga");
     /* Background theme */
-    sfMusic * * musp2 = NULL;
-    musp2 = malloc (I_NB_MUSIC_LAYERS * sizeof (sfMusic *));
+    sf_music * * musp2 = NULL;
+    musp2 = malloc (I_NB_MUSIC_LAYERS * sizeof (sf_music *));
     for (i = 0; i < I_NB_MUSIC_LAYERS; i++)
     {   *(musp2 + i) = NULL;
     }
@@ -357,7 +357,7 @@ char mod_GameG
     sfMusic_SetVolume (*(musp2 + 0), 4.f * f_mus1Vol);
     sfMusic_SetVolume (*(musp2 + 1), f_mus1Vol);
     for (i = 0; i < I_NB_MUSIC_LAYERS; i++)
-    {   sfMusic_SetLoop (*(musp2 + i), sfTrue);
+    {   sfMusic_SetLoop (*(musp2 + i), sf_true);
     }
     for (i = 0; i < I_NB_MUSIC_LAYERS; i++)
     {   sfMusic_Play (*(musp2 + i));
@@ -367,28 +367,28 @@ char mod_GameG
     * d_score                   = 0.0;
     
     /* Clocks */
-    sfClock * clock             = sfClock_Create ();
+    sf_clock * clock             = sfClock_Create ();
     
     /* Others */
     char c_state                = 0;
     
     
-    sfRenderWindow_SetFramerateLimit (windowMain, I_FRAMERATE);
+    sfRenderWindow_SetFramerateLimit (window_main, I_FRAMERATE);
     
     ////////////////////////////////////////////////////////////////////
     // MAIN LOOP ///////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////
     while (c_running)
     {
-        while (sfRenderWindow_GetEvent (windowMain, event))
+        while (sfRenderWindow_GetEvent (window_main, event))
         {   if (c_state == 0
-                && (*event).Type == sfEvtKeyPressed)
+                && (*event).Type == sf_evt_key_pressed)
             {   c_state = 1;
             }
-            else if ((*event).Type == sfEvtKeyReleased)
-            {   if ((*event).Key.Code == sfKeyEscape)
+            else if ((*event).Type == sf_evt_key_released)
+            {   if ((*event).Key.Code == sf_key_escape)
                 {   c_nextMod = 'Q';
-                    c_running = sfFalse;
+                    c_running = sf_false;
                 }
             }
         }
@@ -401,9 +401,9 @@ char mod_GameG
             /* Setting things */
             sfShape_SetColor 
                 ( shp_fader, sfColor_FromRGBA (163,33,98, 2 * f_mus1Vol) );
-            c_JuanDancesNot = sfFalse;
-            if (sfInput_IsKeyDown (input, sfKeySpace))
-            {   c_JuanDancesNot     = sfTrue;
+            c_JuanDancesNot = sf_false;
+            if (sfInput_IsKeyDown (input, sf_key_space))
+            {   c_JuanDancesNot     = sf_true;
             }
             
             /* Printing things */
@@ -427,20 +427,20 @@ char mod_GameG
             
             /* Falling rose */
             if (f_mus1Vol > 75.f)
-            {   if (sfRandom_Int (0,1) == sfTrue)
+            {   if (sfRandom_Int (0,1) == sf_true)
                 {   sfSprite_SetPosition (spr_rose,
                         sfRandom_Float (.333f * cui_renderWindowWidth, cui_renderWindowWidth * .666f), 
                         - (cui_renderWindowHeight / 2.f));
-                    c_roseFalls = sfTrue;
+                    c_roseFalls = sf_true;
                 }
                 printf ("Rose position: %f %f\n", 
                     sfSprite_GetX (spr_rose), sfSprite_GetY (spr_rose));
             }
-            if (c_roseFalls == sfTrue)
+            if (c_roseFalls == sf_true)
             {   sfSprite_Move   (spr_rose, 0.f, 5.f);
                 sfSprite_Rotate (spr_rose, 5.f);
                 if (sfSprite_GetY (spr_rose) > 1.5f * cui_renderWindowHeight)
-                {   c_roseFalls = sfFalse;
+                {   c_roseFalls = sf_false;
                 }
             }
             
@@ -450,12 +450,12 @@ char mod_GameG
                 {
                     case 1:
                         // They're making fun of you now!
-                        c_arrowState = sfFalse;
+                        c_arrowState = sf_false;
                         sfString_SetText    (str_notice, "They're making fun of you now!");
                         break;
                     case 2:
                         // Don't waste your energy!
-                        c_arrowState = sfFalse;
+                        c_arrowState = sf_false;
                         sfString_SetText    (str_notice, "Don't waste your energy!");
                         break;
                     case 3:
@@ -468,7 +468,7 @@ char mod_GameG
             
             /* Juan Carlos dance */
             if (! c_JuanDancesNot)
-            {   c_arrowState = sfTrue;
+            {   c_arrowState = sf_true;
                 fnGame_ArrowPositive (spr_arrow, f_JuanHealth);
                 
                 if (fnGame_IsItTimeToAnimJuanDance (sfClock_GetTime (clock), & d_JuanDanceAnimStep))
@@ -480,10 +480,10 @@ char mod_GameG
                     sfMusic_SetVolume (*(musp2 + 1), f_mus1Vol + .5f);
                 }
                 * d_score 
-                    = *(d_score) + (10.0 *  sfRenderWindow_GetFrameTime (windowMain));
+                    = *(d_score) + (10.0 *  sfRenderWindow_GetFrameTime (window_main));
                 f_JuanHealth += (f_JuanHealth < F_JUAN_HEALTH_MAX) ? 
-                    sfRenderWindow_GetFrameTime (windowMain) : 0;
-                c_JuanIsSoShameful = sfFalse;
+                    sfRenderWindow_GetFrameTime (window_main) : 0;
+                c_JuanIsSoShameful = sf_false;
                 
                 if (sfSyS_sfSpriteAreWeInside 
                         (f_JuanPositionXY [0], f_JuanPositionXY [1],
@@ -503,7 +503,7 @@ char mod_GameG
                 }
             }
             else
-            {   c_arrowState = sfFalse;
+            {   c_arrowState = sf_false;
                 fnGame_JuanDoesNotDance (spr_JuanCarlos, & irect_JuanCarlos);
                 // Decreases volume of each parts slowly
                 if (f_mus1Vol > 2.f)
@@ -516,7 +516,7 @@ char mod_GameG
                         (f_JuanPositionXY [0], f_JuanPositionXY [1],
                         spr_CarlitaSight, F_SIGHT_WIDTH, F_SIGHT_HEIGHT)
                     == 'y')
-                {   * d_score = *(d_score) - (2.0 *  sfRenderWindow_GetFrameTime (windowMain));
+                {   * d_score = *(d_score) - (2.0 *  sfRenderWindow_GetFrameTime (window_main));
                     for (i = 0; i < I_NB_PEOPLE; i++)
                     {   if (sfSyS_sfSpriteAreWeInside 
                             (f_JuanPositionXY [0], f_JuanPositionXY [1],
@@ -528,7 +528,7 @@ char mod_GameG
                     
                     if (c_arrowState != -2)
                     {   if (f_JuanHealth > 0.f)
-                        {   f_JuanHealth -= sfRenderWindow_GetFrameTime (windowMain);
+                        {   f_JuanHealth -= sfRenderWindow_GetFrameTime (window_main);
                         }
                     }
                     c_arrowState = -1;
@@ -543,18 +543,18 @@ char mod_GameG
             for (i = 0; i < I_NB_PEOPLE; i++)
             {
                 // Sight
-                if (ca_peopleLooksElsewhere [i] == sfFalse)
-                {   if (sfRandom_Int (0, 127) == sfTrue)
+                if (ca_peopleLooksElsewhere [i] == sf_false)
+                {   if (sfRandom_Int (0, 127) == sf_true)
                     {   fa_peopleSightRotatOffset [i] 
                             = sfRandom_Float (F_PEOPLE_SIGHT_ROTAT_OFFSET_MIN, F_PEOPLE_SIGHT_ROTAT_OFFSET_MAX);
                         if (sfRandom_Int (0, 1))
                         {   fa_peopleSightRotatOffset [i] *= -1.f;
                         }
-                        ca_peopleLooksElsewhere [i] = sfTrue;
+                        ca_peopleLooksElsewhere [i] = sf_true;
                     }
                 }
-                else if (sfRandom_Int (0, 255) == sfTrue)
-                {   ca_peopleLooksElsewhere [i] = sfFalse;
+                else if (sfRandom_Int (0, 255) == sf_true)
+                {   ca_peopleLooksElsewhere [i] = sf_false;
                 }
                 else
                 {   sfSprite_Rotate (*(sprpX_peopleSight + i), fa_peopleSightRotatOffset [i]);
@@ -572,11 +572,11 @@ char mod_GameG
             }
             
             /* Carlita sight */
-            if (c_CarlitaLooksElsewhere == sfFalse)
-            {   if (sfRandom_Int (0, 127) == sfTrue)
+            if (c_CarlitaLooksElsewhere == sf_false)
+            {   if (sfRandom_Int (0, 127) == sf_true)
                 {   if ( ! c_CarlitaLooksAtJuan
-                        && sfRandom_Int (0, 1) == sfTrue)
-                    {   c_CarlitaLooksAtJuan = sfTrue;
+                        && sfRandom_Int (0, 1) == sf_true)
+                    {   c_CarlitaLooksAtJuan = sf_true;
                     }
                     else
                     {   f_CarlitaSightRotatOffset = sfRandom_Float (F_CARLITA_SIGHT_ROTAT_OFFSET_MIN, F_CARLITA_SIGHT_ROTAT_OFFSET_MAX);
@@ -587,7 +587,7 @@ char mod_GameG
                     c_CarlitaLooksElsewhere = 2;
                 }
             }
-            else if (c_CarlitaLooksElsewhere == sfTrue)
+            else if (c_CarlitaLooksElsewhere == sf_true)
             {   f_CarlitaSightRotat = sfSprite_GetRotation (spr_CarlitaSight) + f_CarlitaSightRotatOffset;
                 if ((f_CarlitaSightRotat > F_CARLITA_SIGHT_LIM_MIN)
                     &&
@@ -597,19 +597,19 @@ char mod_GameG
                         {   if (f_CarlitaSightRotat > 89.f
                                 && f_CarlitaSightRotat < 91.f)
                             {   f_CarlitaSightRotatOffset   = 0.f;
-                                c_CarlitaLooksElsewhere     = sfFalse;
-                                c_CarlitaLooksAtJuan        = sfFalse;
+                                c_CarlitaLooksElsewhere     = sf_false;
+                                c_CarlitaLooksAtJuan        = sf_false;
                             }
                         }
-                        else if (sfRandom_Int (0, 127) == sfTrue)        c_CarlitaLooksElsewhere = sfFalse;
+                        else if (sfRandom_Int (0, 127) == sf_true)        c_CarlitaLooksElsewhere = sf_false;
                 }
-                else        c_CarlitaLooksElsewhere = sfFalse;
+                else        c_CarlitaLooksElsewhere = sf_false;
             }
             else
             {   if (fnGame_IsItTimeToAnimCarlitaSmile (sfClock_GetTime (clock), & d_CarlitaAnimSmileStepTime))
                 {   if ((I_CARLITA_SPR_SMILE_ANIM_STEPS_TOTAL - 1) 
                             == fnGame_CarlitaAnimateSmile (spr_Carlita, & irect_CarlitaSpr, & i_CarlitaSmileAnimStep))
-                    {   c_CarlitaLooksElsewhere = sfTrue;
+                    {   c_CarlitaLooksElsewhere = sf_true;
                     }
                 }
             }
@@ -623,7 +623,7 @@ char mod_GameG
         }
         else if (c_state == 3)
         {   if (c_arrowState != 3)
-            {   c_arrowState = sfFalse;
+            {   c_arrowState = sf_false;
             }
             sfShape_SetColor 
                 (shp_fader, sfColor_FromRGBA (0,0,0, 127));
@@ -642,34 +642,34 @@ char mod_GameG
             c_state = 4;
         }
         else if (c_state == 4)
-        {   if (sfMusic_GetStatus (mus_gameLost) == sfStopped)
-                c_running = sfFalse;
+        {   if (sfMusic_GetStatus (mus_gameLost) == sf_stopped)
+                c_running = sf_false;
         }
         
         
         ///* Drawing *///
-        sfRenderWindow_Clear      (windowMain,  sfBlack);
-        sfRenderWindow_DrawSprite (windowMain,  spr_playground);
-        sfRenderWindow_DrawSprite (windowMain,  spr_CarlitaSight);
+        sfRenderWindow_Clear      (window_main,  sf_black);
+        sfRenderWindow_DrawSprite (window_main,  spr_playground);
+        sfRenderWindow_DrawSprite (window_main,  spr_CarlitaSight);
         for (i = 0; i < (I_NB_PEOPLE * 2); i++)
         {   if (i < I_NB_PEOPLE)
             {   sfRenderWindow_DrawSprite 
-                    (windowMain, *(sprpX_peopleSight + i));
+                    (window_main, *(sprpX_peopleSight + i));
             }
             else
             {   sfRenderWindow_DrawSprite 
-                    (windowMain, *(sprpX_people + (i - I_NB_PEOPLE)));
+                    (window_main, *(sprpX_people + (i - I_NB_PEOPLE)));
             }
         }
-        sfRenderWindow_DrawShape  (windowMain,  shp_fader);
-        sfRenderWindow_DrawSprite (windowMain,  spr_Carlita);
-        sfRenderWindow_DrawSprite (windowMain,  spr_JuanCarlos);
-        if (c_arrowState != sfFalse)
-        {   sfRenderWindow_DrawSprite (windowMain,  spr_arrow);
+        sfRenderWindow_DrawShape  (window_main,  shp_fader);
+        sfRenderWindow_DrawSprite (window_main,  spr_Carlita);
+        sfRenderWindow_DrawSprite (window_main,  spr_JuanCarlos);
+        if (c_arrowState != sf_false)
+        {   sfRenderWindow_DrawSprite (window_main,  spr_arrow);
         }
-        sfRenderWindow_DrawSprite (windowMain,  spr_rose);
-        sfRenderWindow_DrawString (windowMain,  str_notice);
-        sfRenderWindow_Display    (windowMain);
+        sfRenderWindow_DrawSprite (window_main,  spr_rose);
+        sfRenderWindow_DrawString (window_main,  str_notice);
+        sfRenderWindow_Display    (window_main);
     }
     
     
@@ -719,26 +719,26 @@ char mod_GameG
 
 
 char mod_RetryR 
-    (sfRenderWindow * windowMain, sfEvent * event, sfInput * input, double d_score)
+    (sf_render_window * window_main, sf_event * event, sf_input * input, double d_score)
 {
     /* Usual variables */
-    char c_running = sfTrue;
+    char c_running = sf_true;
     char c_nextMod = 'G';
-    const unsigned int      cui_renderWindowWidth     = sfRenderWindow_GetWidth (windowMain),
-                            cui_renderWindowHeight    = sfRenderWindow_GetHeight (windowMain);
+    const unsigned int      cui_renderWindowWidth     = sfRenderWindow_GetWidth (window_main),
+                            cui_renderWindowHeight    = sfRenderWindow_GetHeight (window_main);
     
-    sfFont * font = NULL;
+    sf_font * font = NULL;
     
     /* Noise layer */
-    sfImage * img = NULL;
-    sfSprite * spr_noise 
+    sf_image * img = NULL;
+    sf_sprite * spr_noise 
         = sfSyS_sfSpriteDeclare 
-            (img, "data/noise.png", sfTrue, 
-            sfColor_FromRGBA (255,255,255, 196), sfFalse, 
+            (img, "data/noise.png", sf_true, 
+            sfColor_FromRGBA (255,255,255, 196), sf_false, 
             cui_renderWindowWidth, cui_renderWindowHeight);
-    sfSprite_SetBlendMode (spr_noise, sfBlendAdd);
+    sfSprite_SetBlendMode (spr_noise, sf_blend_add);
     
-    sfString * str_tipOrJoke = NULL;
+    sf_string * str_tipOrJoke = NULL;
     switch (sfRandom_Int (0,4))
     {
         case 0:
@@ -747,7 +747,7 @@ char mod_RetryR
                     (font, "data/Isabella.ttf", 31,
                     NULL, "She is the Juan . . .",
                     sfColor_FromRGBA (255,255,255,255), 
-                    sfTrue,
+                    sf_true,
                     0.f, 0.f);
             break;
         case 1:
@@ -756,7 +756,7 @@ char mod_RetryR
                     (font, "data/Isabella.ttf", 31,
                     NULL, "Tip: she happens to smile . . .",
                     sfColor_FromRGBA (255,255,255,255), 
-                    sfTrue,
+                    sf_true,
                     0.f, 0.f);
             break;
         case 2:
@@ -765,7 +765,7 @@ char mod_RetryR
                     (font, "data/Isabella.ttf", 31,
                     NULL, "Tip: dancing while she isn't watching is way more exhausting . . .",
                     sfColor_FromRGBA (255,255,255,255), 
-                    sfTrue,
+                    sf_true,
                     0.f, 0.f);
             break;
         case 3:
@@ -774,7 +774,7 @@ char mod_RetryR
                     (font, "data/Isabella.ttf", 31,
                     NULL, "Tip: don't miss any opportunity to show her your skill . . .",
                     sfColor_FromRGBA (255,255,255,255), 
-                    sfTrue,
+                    sf_true,
                     0.f, 0.f);
             break;
         case 4:
@@ -783,7 +783,7 @@ char mod_RetryR
                     (font, "data/Isabella.ttf", 31,
                     NULL, "Tip: if people see you dancing, they will make fun of you . . .",
                     sfColor_FromRGBA (255,255,255,255), 
-                    sfTrue,
+                    sf_true,
                     0.f, 0.f);
             break;
     }
@@ -795,32 +795,32 @@ char mod_RetryR
         = malloc (strlen ("Score: XXXXX") * sizeof (char));
     snprintf (cp_score, strlen ("Score: XXXXX"), 
         "Score: %d", (int) d_score);
-    sfString * str_score =
+    sf_string * str_score =
         sfSyS_sfStringDeclare
             (font, "data/Isabella.ttf", 47,
             NULL, (const char *) cp_score,
             sfColor_FromRGBA (255,255,255,255), 
-            sfTrue,
+            sf_true,
             0.f, 0.f);
     free (cp_score);
     sfString_SetPosition (str_score, 
         cui_renderWindowWidth / 2.f, cui_renderWindowHeight * .333f);
     
-    sfString * str_retry =
+    sf_string * str_retry =
         sfSyS_sfStringDeclare
             (font, "data/Isabella.ttf", 63,
             NULL, "Retry Juance again?",
             sfColor_FromRGBA (255,255,255,255), 
-            sfTrue,
+            sf_true,
             0.f, 0.f);
     sfString_SetPosition (str_retry, 
         cui_renderWindowWidth / 2.f, cui_renderWindowHeight / 2.f);
-    sfString * str_retry2 =
+    sf_string * str_retry2 =
         sfSyS_sfStringDeclare
             (font, "data/Isabella.ttf", 47,
             NULL, "[ Y | N ]",
             sfColor_FromRGBA (255,255,255,255), 
-            sfTrue,
+            sf_true,
             0.f, 0.f);
     sfString_SetPosition (str_retry2, 
         cui_renderWindowWidth / 2.f, cui_renderWindowHeight * .6f);
@@ -829,28 +829,28 @@ char mod_RetryR
     while (c_running)
     {
         // Quit if Return is not pressed
-        while (sfRenderWindow_GetEvent (windowMain, event))
-        {   if ((*event).Type == sfEvtKeyReleased)
-            {   if ((*event).Key.Code       == sfKeyY)
+        while (sfRenderWindow_GetEvent (window_main, event))
+        {   if ((*event).Type == sf_evt_key_released)
+            {   if ((*event).Key.Code       == sf_key_y)
                 {   c_nextMod = 'G';
-                    c_running = sfFalse;
+                    c_running = sf_false;
                 }
-                else if ((*event).Key.Code  == sfKeyN)  
+                else if ((*event).Key.Code  == sf_key_n)  
                 {   c_nextMod = 'Q';
-                    c_running = sfFalse;
+                    c_running = sf_false;
                 }
             }
         }
         
         
         /* Drawing */
-        sfRenderWindow_Clear        (windowMain, sfColor_FromRGBA (164,32,32, 255));
-        sfRenderWindow_DrawSprite   (windowMain, spr_noise);
-        sfRenderWindow_DrawString   (windowMain, str_tipOrJoke);
-        sfRenderWindow_DrawString   (windowMain, str_score);
-        sfRenderWindow_DrawString   (windowMain, str_retry);
-        sfRenderWindow_DrawString   (windowMain, str_retry2);
-        sfRenderWindow_Display      (windowMain);
+        sfRenderWindow_Clear        (window_main, sfColor_FromRGBA (164,32,32, 255));
+        sfRenderWindow_DrawSprite   (window_main, spr_noise);
+        sfRenderWindow_DrawString   (window_main, str_tipOrJoke);
+        sfRenderWindow_DrawString   (window_main, str_score);
+        sfRenderWindow_DrawString   (window_main, str_retry);
+        sfRenderWindow_DrawString   (window_main, str_retry2);
+        sfRenderWindow_Display      (window_main);
     }
     
     
