@@ -6,8 +6,9 @@ Convert all camelCase (or CamelCase) words (works great on C files).
     camel2snake.pl [OPTIONS] FILE
 
 ## OPTIONS
-    -x PATTERNS         PATTERNS is a '|'-separated list of regex patterns; matching strings won't be altered
-    -i [SUFFIX]         edit files in place (makes backup if SUFFIX supplied), passed to `perl` as is (see `man perlre` and `man perleretut`)
+    -x PATTERNS         PATTERNS is a '|'-separated list of regex patterns; 
+                        matching strings won't be altered
+    -i [SUFFIX]         edit files in place (makes backup if SUFFIX supplied)
     -f, --force         force in-place editing
     -h, --help          show this help message
 
