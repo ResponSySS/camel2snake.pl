@@ -1,6 +1,6 @@
 # The case of camelCase
 
-An UpperCamelCased or lowerCamelCased word is composed of atoms. The atom is either [A-Z] or [A-Z][a-z]+ or [0-9]+.
+An UpperCamelCased or lowerCamelCased word is composed of atoms. The atom is either [A-Z] or [A-Z][a-z]+ or [0-9]+.  
 However you can't compose any word you want, there are composition rules:
 1. first atom can't be a number
 2. in lowerCamelCase, first atom must be lowercase
@@ -37,5 +37,5 @@ It will then match *AnRGBV* but not *RGB*.
 	<(FIRST_ATOM)(ATOM)(ATOM)(...)>
 	<([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)>
 
-`[A-Z]?[a-z]+`       matches a unique first atom with at least one lowercase letter (FIRST_ATOM).
+`[A-Z]?[a-z]+`       matches a unique first atom with at least one lowercase letter (FIRST_ATOM).  
 `[0-9]+|[A-Z][a-z]*` matches remaining atoms (ATOM).
