@@ -1,6 +1,6 @@
 # The case of camelCase
 
-An UpperCamelCased or lowerCamelCased word is composed of atoms. The atom is either [A-Z] or [A-Z][a-z]+ or [0-9]+.  
+An UpperCamelCased or lowerCamelCased word is composed of atoms. The atom is either `[A-Z]` or `[A-Z][a-z]+` or `[0-9]+`.  
 However you can't compose any word you want, there are composition rules:
 1. first atom can't be a number
 2. in lowerCamelCase, first atom must be lowercase
