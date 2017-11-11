@@ -9,7 +9,7 @@
 # 		(Works perfectly on C files)
 # 
 #       OPTIONS: ---
-#  REQUIREMENTS: sed
+#  REQUIREMENTS: perl
 #          BUGS: ---
 #         NOTES: ---
 #        AUTHOR: Sylvain S. (ResponSyS), mail@systemicresponse.com
@@ -19,11 +19,12 @@
 #===============================================================================
 
 #TODO ::: Tue 07 Nov 2017 08:05:47 PM CET
-# * figure out general rules for flawless C file parsing (ignore keywords, etc.)
 # * EXCLUSION PATTERNS
 # 	* -x PATTERN : ignore words matching PATTERN
 # 	* ignore strings preceded by \n, \t, \a, \b, \f, \v, \xHH, \e, \uHHH, \uHHH
 # 		like \nthisVarHere or \tthatParam
+# 	* OR just ignore strings between quotes
+# TODO: convert this to a perl script
 
 set -o nounset
 set -o errexit
@@ -40,12 +41,8 @@ F_PATT_LIST=""
 F_PATT_LIST_SORT=""
 
 FILES=""
-SED_CMD="gp"
-SED_FLAGS_BASE="-n"
-SED_FLAGS=""
-SED_PRE_MATCH=""
+PERL_FLAGS="-npe"
 EXCL_PATT=""
-EXCL_PATT_LIST=""
 IN_PLACE_EDIT=0
 FORCE=0
 IGNORE_PRINTF=0
@@ -95,23 +92,21 @@ fi
 fn_help() {
 	cat << EOF
 $PROGRAM_NAME $PROGRAM_VER
-    Convert all camelCase (or CamelCase) words to snake_case using \`sed\` (works great on C files).
+    Convert all camelCase (or CamelCase) words to snake_case using \`perl\` (works great on C files).
 
 USAGE
     $PROGRAM_NAME [OPTIONS] FILE
 
 OPTIONS
-    -x PATTERNS         PATTERNS is a colon-separated list of regex patterns; matching strings won't be altered
-    -i[SUFFIX], --in-place[=SUFFIX]
-                        edit files in place, passed to \`sed\` as is, see \`man sed\`
+    -x PATTERNS         PATTERNS is a '|'-separated list of regex patterns; matching strings won't be altered
+    -i[SUFFIX]		edit files in place (makes backup if SUFFIX supplied), passed to \`perl\` as is (see \`man perlre\` and \`man perleretut\`)
     -f, --force         force in-place editing
-    -a FLAGS            pass FLAGS to \`sed\` as is
-    -s                  ignore lines containing \"printf\" and \"puts\" (workaround to avoid unwanted transformation of format strings, see BUGS)
+    -a FLAGS            pass FLAGS to \`perl\` as is
 
 EXAMPLES
-    $ $PROGRAM_NAME -x "sf\w\+:\w\+En" *.c *.h
-        test output, won't change lines containing strings like \"sfSpriteSize\" and \"stateEn\"
-    $ $PROGRAM_NAME -x "fn\w\+:st\w\+:thatDankIntType" -i.ORIG program.c
+    $ $PROGRAM_NAME -x "sf\w+|\w+En" *.c *.h
+        test output, won't change strings like \"sfSpriteSize\" and \"stateEn\"
+    $ $PROGRAM_NAME -x "fn\w+|st\w+|thatDankIntType" -i.ORIG program.c
         make a backup of program.c to program.c.ORIG, change case while ignoring words like \"fnGameRender\", \"stObj\" and \"thatDankIntType\"
 
 BUGS
@@ -128,16 +123,13 @@ EOF
 fn_showParams() {
 	printf "\
 FILES            %s \n\
-EXCL_PATT_LIST   %s \n\
-SED_CMD          %s \n\
-SED_FLAGS        %s \n\
+PERL_FLAGS       %s \n\
 IN_PLACE_EDIT    %s \n\
-IGNORE_PRINTF    %s \n\
 FORCE            %s \n\
-" "$FILES" "$EXCL_PATT_LIST" $SED_CMD "$SED_FLAGS" $IN_PLACE_EDIT $IGNORE_PRINTF $FORCE
+" "$FILES" "$PERL_FLAGS" $IN_PLACE_EDIT $FORCE
 }
 
-fn_needCmd "sed"
+fn_needCmd "perl"
 fn_needCmd "sort"
 fn_needCmd "uniq"
 
@@ -153,19 +145,15 @@ while test $# -ge 1; do
 			shift
 			;;
 		"-i"*|"--in-place="*)
-			SED_CMD="g"
-			SED_FLAGS_BASE="$1"
+			PERL_FLAGS="$PERL_FLAGS $1"
 			IN_PLACE_EDIT=1
 			;;
 		"-a")
-			SED_FLAGS="$SED_FLAGS $2"
+			PERL_FLAGS="$PERL_FLAGS $2"
 			shift
 			;;
 		"-f"|"--force")
 			FORCE=1
-			;;
-		"-s")
-			IGNORE_PRINTF=1
 			;;
 		"--show-params")
 			SHOW_PARAMS=1
@@ -182,65 +170,56 @@ if test -z "$FILES"; then
 	fn_err "no FILE argument provided (see --help)" 10
 fi
 
+# SED
 # Generate list of excluded words
+#if test -n "$EXCL_PATT"; then
+# 	fn_createTmpDir "$TMP_DIR_PATT"
+# 	F_PATT_LIST="$DIR_TMP/list.tmp"
+# 	F_PATT_LIST_SORT="$DIR_TMP/list"
+# 	EXCL_PATT_LIST="$(echo $EXCL_PATT | tr ':' ' ')"
+# 	if test -z "$EXCL_PATT_LIST"; then
+# 		fn_err "$EXCL_PATT: wrong exclusion pattern" 4
+# 	fi
+# 	echo > "$F_PATT_LIST"
+# 	for i in $EXCL_PATT_LIST; do
+# 		sed -n "s/.*\b\(${i}\)\b.*/\1/p" $FILES >> "$F_PATT_LIST"
+# 	done
+# 	cat "$F_PATT_LIST" | sort | uniq > "$F_PATT_LIST_SORT"
+# 	# F_PATT_LIST_SORT will contain original text, F_PATT_LIST will contain transformed text
+# 	cp "$F_PATT_LIST_SORT" "$F_PATT_LIST"
+# 	FILES="$FILES $F_PATT_LIST"
+#fi
 if test -n "$EXCL_PATT"; then
-	fn_createTmpDir "$TMP_DIR_PATT"
-	F_PATT_LIST="$DIR_TMP/list.tmp"
-	F_PATT_LIST_SORT="$DIR_TMP/list"
-	EXCL_PATT_LIST="$(echo $EXCL_PATT | tr ':' ' ')"
-	if test -z "$EXCL_PATT_LIST"; then
-		fn_err "$EXCL_PATT: wrong exclusion pattern" 4
-	fi
-	echo > "$F_PATT_LIST"
-	for i in $EXCL_PATT_LIST; do
-		sed -n "s/.*\b\(${i}\)\b.*/\1/p" $FILES >> "$F_PATT_LIST"
-	done
-	cat "$F_PATT_LIST" | sort | uniq > "$F_PATT_LIST_SORT"
-	# F_PATT_LIST_SORT will contain original text, F_PATT_LIST will contain transformed text
-	cp "$F_PATT_LIST_SORT" "$F_PATT_LIST"
-	FILES="$FILES $F_PATT_LIST"
+	EXCL_PATT="(?!$EXCL_PATT)"
 fi
-if test $IGNORE_PRINTF -eq 1; then
-	SED_PRE_MATCH='/printf\|puts/!'
-fi
-SED_FLAGS="${SED_FLAGS_BASE} ${SED_FLAGS}"
 if test $SHOW_PARAMS -eq 1; then
 	fn_showParams
-	test -f "$F_PATT_LIST_SORT" && less "$F_PATT_LIST_SORT"
 fi
 
-# SED
-FIRST_ATOM="[A-Z]\?[a-z]\+"
-ATOM="[A-Z][a-z]*\|[0-9]\+"
 # PERL
-#FIRST_ATOM="[A-Z]?[a-z]+"
-#ATOM="[A-Z][a-z]*|[0-9]+"
+FIRST_ATOM="[A-Z]?[a-z]+"
+ATOM="[A-Z][a-z]*|[0-9]+"
+BOUND="(?!.*[\'\"].*)"
+EXCL_LKHD="(?!sf|\w+En|intThatType)"
 
 echo -en "SAMPLE OUTPUT:\n\t"
 cat << EOF
-sed     "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\b/\l\1_\l\2/ ${SED_CMD}"  		${SED_FLAGS} ${FILES}
+perl $PERL_FLAGS 's/$BOUND \b $EXCL_LKHD ($FIRST_ATOM)($ATOM) \b$BOUND	/\l\1_\l\2/ xg ;
 EOF
 if test $FORCE -eq 0 && test $IN_PLACE_EDIT -eq 1; then
 	m_say "$PROGRAM_NAME will now edit the following files:\ $FILES.\nPress CTRL+C to abort, ENTER to continue." && read
 fi
 
-# PERL : 's/(\b|\\n|\\t|\\v|\\f|\\a|\\e)(?!sf)([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)\b/$1\l$2_\l$3/g'
-
-perl -pne '\
-	BOUND="\b|\\n|\\t|\\v|\\f|\\a|\\e"
-	EXCL_PREFIX="sf"
-	FIRST_ATOM="[A-Z]?[a-z]+"
-	ATOM="[A-Z][a-z]*|[0-9]+"
-	s/($BOUND_PATT)(?!$EXCL_PREFIX)(FIRST_ATOM)($ATOM)\b/$1\l$2_\l$3/g ;\
- 	s/($BOUND_PATT)(?!$EXCL_PREFIX)(FIRST_ATOM)($ATOM)($ATOM)\b/$1\l$2_\l$3_\l$4/g ;\
-	'
-
-sed \
-    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\b/\l\1_\l\2/  											 	${SED_CMD}"\
-    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3/ 										${SED_CMD}"\
-    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3_\l\4/ 								${SED_CMD}"\
-    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3_\l\4_\l\5/ 						${SED_CMD}"\
-    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3_\l\4_\l\5_\l\6/ 				${SED_CMD}"\
-    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3_\l\4_\l\5_\l\6_\l\7/			${SED_CMD}"\
-    -e  "${SED_PRE_MATCH} s/\b\(${FIRST_ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\(${ATOM}\)\b/\l\1_\l\2_\l\3_\l\4_\l\5_\l\6_\l\7_\l\8/ ${SED_CMD}"\
-	${SED_FLAGS} ${FILES}
+perl ${PERL_FLAGS} '\
+	$BOUND="(?!.*["].*)" 											;\
+	$EXCL_LKHD="(?!sf|\w+En|intThatType)" 									;\
+	$FIRST_ATOM="[A-Z]?[a-z]+" 										;\
+	$ATOM="[A-Z][a-z]*|[0-9]+"  										;\
+	s/$BOUND \b $EXCL_LKHD ($FIRST_ATOM)($ATOM) 						\b$BOUND	/\l$1_\l$2/ 					xg ;\
+ 	s/$BOUND \b $EXCL_LKHD ($FIRST_ATOM)($ATOM)($ATOM) 					\b$BOUND 	/\l$1_\l$2_\l$3/ 				xg ;\
+ 	s/$BOUND \b $EXCL_LKHD ($FIRST_ATOM)($ATOM)($ATOM)($ATOM)				\b$BOUND 	/\l$1_\l$2_\l$3_\l$4/ 				xg ;\
+ 	s/$BOUND \b $EXCL_LKHD ($FIRST_ATOM)($ATOM)($ATOM)($ATOM)($ATOM)			\b$BOUND 	/\l$1_\l$2_\l$3_\l$4_\l$5/ 			xg ;\
+ 	s/$BOUND \b $EXCL_LKHD ($FIRST_ATOM)($ATOM)($ATOM)($ATOM)($ATOM)($ATOM)			\b$BOUND 	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6/			xg ;\
+ 	s/$BOUND \b $EXCL_LKHD ($FIRST_ATOM)($ATOM)($ATOM)($ATOM)($ATOM)($ATOM)($ATOM)		\b$BOUND 	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7/		xg ;\
+ 	s/$BOUND \b $EXCL_LKHD ($FIRST_ATOM)($ATOM)($ATOM)($ATOM)($ATOM)($ATOM)($ATOM)($ATOM)	\b$BOUND 	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7_\l$8/	xg ;\
+	' ${FILES}

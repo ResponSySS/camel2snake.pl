@@ -1,6 +1,18 @@
 # Better parsing with perl
 
+## Format string problems
+
+Escape sequences of format strings cause some problems while handling camelCase when they are located just before a camelCase string, such as in:
+* \nthisVar (=> \nthis_var)
+* \tToTheMoon (=> \t_to_the_moon)
+A convenient workaround is to avoid parsing strings inside """ or "'" quotes.
+
+/* PERL PATTERN
+\b\\?[ntvfea]?(?!sf\w+|\w+En|intThatType)([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)+\b
+*/
+
 PATTERN="(FIRST_ATOM)(ATOM)+"
+
 
 /*
 1. parse all lines in files
@@ -9,6 +21,7 @@ PATTERN="(FIRST_ATOM)(ATOM)+"
 4. change remaining strings to proper snake_case formatting
 */
 
+```
 if STRING match PATTERN 
 		saves STRING
 
@@ -27,3 +40,4 @@ for W in WORDS ; do
 				=> \l$1_\l$2_\l$3_\l$4
 			if $3 exists
 				=> \l$1_\l$2_\l$3
+```
