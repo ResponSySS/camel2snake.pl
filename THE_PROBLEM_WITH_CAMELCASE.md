@@ -3,7 +3,7 @@
 An UpperCamelCased or lowerCamelCased word is composed of atoms. The atom is either [A-Z] or [A-Z][a-z]+ or [0-9]+.
 However you can't compose any word you want, there are composition rules:
 1. first atom can't be a number
-2. in lowerCamelCase, first atom as to be lowercase
+2. in lowerCamelCase, first atom must be lowercase
 
 Examples:
 * a55Magnum is valid (3 atoms)
@@ -12,7 +12,9 @@ Examples:
 * A55magnum is not valid
 * aDoom3BFGGame is valid (7 atoms)
 
-## Matching pattern of an atom
+## Matching pattern
+
+To match [Cc]amelCase words, we can use the following regex pattern:
 
 	<(FIRST_ATOM)(ATOM)(ATOM)(...)>
 	<([A-Z]|[A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)>
