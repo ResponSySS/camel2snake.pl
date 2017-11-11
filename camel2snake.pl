@@ -30,7 +30,7 @@ use warnings;
 
 use Getopt::Long;
 
-my $prog_name 	= "camel2snake.sh";
+my $prog_name 	= "camel2snake.pl";
 our $VERSION 	= "0.5";
 
 my $files = "";
@@ -57,9 +57,9 @@ sub fn_needCmd {
 	}
 }
 sub fn_help {
-	print( << "EOF");
+	print( <<EOF );
 $prog_name $VERSION
-    Convert all camelCase (or CamelCase) words to snake_case using \`perl\` (works great on C files).
+    Convert all camelCase (or CamelCase) words (works great on C files).
 
 USAGE
     $prog_name [OPTIONS] FILE
@@ -72,17 +72,17 @@ OPTIONS
 
 BASE PATTERN
     The base regex pattern for matching [cC]amelCase words is:
-        < |-FIRST_ATOM-||-------ATOM-------||-------ATOM-------||...| >
+        <  |-FIRST_ATOM-||-------ATOM-------||-------ATOM-------||...|  >
         \\b([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)\\b
 
 EXAMPLES
-    $ $prog_name -x "sf\\w+|\\w+En" *.c *.h
-        test output, won't change strings like \"sfSpriteSize\" and \"stateEn\"
-    $ $prog_name -x "fn\\w+|st\\w+|thatDankIntType" -i.ORIG program.c
-        make a backup of program.c to program.c.ORIG, change case while ignoring words like \"fnGameRender\", \"stObj\" and \"thatDankIntType\"
+    \$ $prog_name -x "sf\\w+|\\w+En" *.c *.h
+        test output, won't change strings like "sfSpriteSize" and "stateEn"
+    \$ $prog_name -x "fn\\w+|st\\w+|thatDankIntType" -i.ORIG program.c
+        make a backup of program.c to program.c.ORIG, change case while ignoring words like "fnGameRender", "stObj" and "thatDankIntType"
 
 BUGS
-    Only problem is it pokes on formatting string such as "\\nThis is" (which becomes \"\\n_this is\").
+    Only problem is it pokes on formatting string such as "\\nThis is" (which becomes "\\n_this is").
 
 AUTHOR
     Written by Sylvain Saubier (<http://SystemicResponse.com>)
@@ -96,7 +96,7 @@ sub fn_showParams {
 	my $inpl_edit = 0;
 	no warnings 'uninitialized';
 	if (defined( $inpl_suffix )) { $inpl_edit = 1; }
-	print( << "EOF" );
+	print( <<EOF );
 FILES           $files
 EXCLUSION PATT  $excl_patt
 IN_PLACE_EDIT   $inpl_edit
