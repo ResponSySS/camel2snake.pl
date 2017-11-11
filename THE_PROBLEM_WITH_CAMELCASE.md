@@ -19,7 +19,7 @@ To match [Cc]amelCase words, we can use the following regex pattern:
 	<(FIRST_ATOM)(ATOM)(ATOM)(...)>
 	<([A-Z]|[A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)>
 
-`[A-Z]|[A-Z]?[a-z]+` matches the unique first atom (FIRST_ATOM).
+`[A-Z]|[A-Z]?[a-z]+` matches the unique first atom (FIRST_ATOM).  
 `[0-9]+|[A-Z][a-z]*` matches remaining atoms (ATOM).
 
 ### Problem
@@ -28,7 +28,7 @@ It can match UPPERCASE words as well: the word *OUCH* can be considered as havin
 
 ### Revision
 
-We thus have to consider adding a condition in order to prevent false positives such as *OUCH* or *RGB*.  
+We thus have to consider adding a condition in order to prevent false positives such as *OUCH* or *RGB*. 
 The arbitrary condition I've chosen is:
 * the first atom must have lowercase letter(s)
 
