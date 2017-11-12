@@ -24,6 +24,8 @@
 # 	* ignore strings preceded by \n, \t, \a, \b, \f, \v, \xHH, \e, \uHHH, \uHHH
 # 		like \nthisVarHere or \tthatParam
 # 	* OR just ignore strings between quotes
+# TODO: Use $INPLACE_EDIT
+# How to copy files properly without line-per-line writing
 
 use strict;
 use warnings;
@@ -34,9 +36,11 @@ my $prog_name 	= "camel2snake.pl";
 our $VERSION 	= "0.5";
 
 my $files = "";
+my $temp_suffix = ".c2c";
 my $help = 0;
 my $excl_patt = "";
-my $inpl_suffix;
+my $in_place_suffix;
+my $in_place_edit = 0;
 my $force = 0;
 my $show_params = 0;
 
@@ -44,7 +48,10 @@ my $show_params = 0;
 sub fn_say {
 	print( "$prog_name: ". shift() );
 }
-
+# error message (string), return code (int)
+sub fn_say_err {
+	print( STDERR "$prog_name: ". shift() );
+}
 # error message (string), return code (int)
 sub fn_err {
 	die( "$prog_name: ERROR: ". shift() );
@@ -94,20 +101,16 @@ EOF
 }
 
 sub fn_showParams {
-	my $inpl_edit = 0;
-	no warnings 'uninitialized';
-	if (defined( $inpl_suffix )) { $inpl_edit = 1; }
 	print( <<EOF );
 FILES           $files
 EXCLUSION PATT  $excl_patt
-IN_PLACE_EDIT   $inpl_edit
-IN_PLACE_SUFFIX $inpl_suffix
+IN_PLACE_EDIT   $in_place_edit
+IN_PLACE_SUFFIX $in_place_suffix
 FORCE           $force
 EOF
-	use warnings;
 }
 
-GetOptions ( 'x=s' => \$excl_patt, 'i:s' => \$inpl_suffix, 'f|force' => \$force, 'h|help' => \$help, 'hack' => \$show_params );
+GetOptions ( 'x=s' => \$excl_patt, 'i:s' => \$in_place_suffix, 'f|force' => \$force, 'h|help' => \$help, 'hack' => \$show_params );
 
 if ($show_params) {
 	fn_showParams();
@@ -116,15 +119,55 @@ if ($help) {
 	fn_help();
 	exit;
 }
-if (defined( $inpl_suffix )) {
-	if (length( $inpl_suffix )) {
-		;
+no warnings 'uninitialized';
+if (defined( $in_place_suffix )) {
+	$in_place_edit = 1;
+	if (length( $in_place_suffix )) {
+		# will duplicate file to $file.$in_place_suffix
+		fn_say_err( "SUFFIX IS: $in_place_suffix" );
+		$temp_suffix = "";
+	} else {
+		# will duplicate file to $file.$temp_suffix
+		$in_place_suffix = "";
+
 	}
 }
+use warnings;
+# FILE LOOPING AND REPLACING
 {
-	my $arg;
-	while ($arg = shift()) {
-		print( "ARGS =".$arg );
+	# WARNING : are you sure you want to edit these files?
+	{
+		my $files = "";
+		foreach my $file (@ARGV) {
+			$files .= "$file ";
+		}
+		fn_say_err( "You are about to edit the following files:\n\t$files\nContinue? [y/N] " );
+		my $in = <STDIN>;
+		chomp( $in );
+		# it's actually also matching "yES" too but hey it's funny lmfao lol xD
+		unless ($in =~ /[Yy](es|ES)?/) {
+			fn_say_err( "not editing files - exiting" );
+			exit;
+		}
+	}
+	foreach my $file (@ARGV) {
+		my $fh_in; my $fh_out;
+		fn_say_err( "parsing $file\n" );
+		open( $fh_in, "<", $file ) || fn_err( "can't open \"$file\"" );
+		if ($in_place_edit) {
+			open( $fh_out, ">", $file.$in_place_suffix.$temp_suffix ) || fn_err( "can't open \"$file.$in_place_suffix.$temp_suffix\" for writing" );
+		}
+		# 1. Copy file $file to $file.c2c or $file.$in_place_suffix
+		while (my $line = <$fh_in>) {
+			#$line =~ s/    [Ff][Aa][Mm]      /GUYS/x;
+			if ($in_place_edit) { 	print( $fh_out $line );
+			} else { 		print( STDOUT $line );
+			}
+		}
+		# 2. Print to STDOUT or edit the $file.c2c or $file
+
+		close( $fh_in );
+		if ($in_place_edit) { close( $fh_out ); }
 	}
 }
 
