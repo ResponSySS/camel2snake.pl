@@ -1,21 +1,12 @@
 anR   AnR   AnRG   AnRGB   AnRGBA   AnRGBAV a55  a55Magnum a55MagnumGun  a55MagnumGun55  
-
 a55Magnum:*aDoom3BFGGame is valid (7 atoms)
-
 nsfOkay toKey
-
 --- PARTIAL MATCH ---
-
 \nthisVarHere;\tthisVar,\vThatParam
-
 !!! NOT MATCHING UNDER THIS LINE !!!
-
 * A55magnum, A55Magnum, 55Magnum; *ARGBA
-
 !!! FORBIDDEN MATCH !!!
-
 "\nsfThisFuck" sfA55MagnumEn sfA55Magnum a55MagnumEn
-
 intThatType "\nintThatType" "\nintThatTypeEn"
 
 

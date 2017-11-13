@@ -18,19 +18,18 @@
 #      REVISION:  ---
 #===============================================================================
 
-#TODO ::: Tue 07 Nov 2017 08:05:47 PM CET
-# * EXCLUSION PATTERNS
+# TODO: EXCLUSION PATTERNS NOT IMPLEMENTED YET
 # 	* -x PATTERN : ignore words matching PATTERN
 # 	* ignore strings preceded by \n, \t, \a, \b, \f, \v, \xHH, \e, \uHHH, \uHHH
 # 		like \nthisVarHere or \tthatParam
 # 	* OR just ignore strings between quotes
 # TODO: Use $INPLACE_EDIT
-# How to copy files properly without line-per-line writing
 
 use strict;
 use warnings;
 
 use Getopt::Long;
+use File::Copy;
 
 my $prog_name 	= "camel2snake.pl";
 our $VERSION 	= "0.5";
@@ -54,7 +53,7 @@ sub fn_say_err {
 }
 # error message (string), return code (int)
 sub fn_err {
-	die( "$prog_name: ERROR: ". shift() );
+	die( "$prog_name: ERROR: ". shift() ."\n");
 }
 # command to test (string)
 sub fn_needCmd {
@@ -66,7 +65,7 @@ sub fn_needCmd {
 sub fn_help {
 	print( <<EOF );
 $prog_name $VERSION
-    Convert all camelCase (or CamelCase) words (works great on C files).
+    Convert all camelCase (or CamelCase) words to snake_case (works great on C files).
 
 USAGE
     $prog_name [OPTIONS] FILE
@@ -74,23 +73,32 @@ USAGE
 OPTIONS
     -x PATTERNS         PATTERNS is a '|'-separated list of regex patterns; 
                         matching strings won't be altered
-    -i [SUFFIX]		edit files in place (makes backup if SUFFIX supplied)
+                        (NOT IMPLEMENTED YET)
+    -i [SUFFIX]         edit files in place (makes backup if SUFFIX supplied)
     -f, --force         force in-place editing
     -h, --help          show this help message
 
 BASE PATTERN
     The base regex pattern for matching [cC]amelCase words is:
-        <  |-FIRST_ATOM-||-------ATOM-------||-------ATOM-------||...|  >
+        < |-FIRST_ATOM-||-------ATOM-------||-------ATOM-------||...|  >
         \\b([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)\\b
 
 EXAMPLES
     \$ $prog_name -x "sf\\w+|\\w+En" *.c *.h
-        test output, won't change strings like "sfSpriteSize" and "stateEn"
-    \$ $prog_name -x "fn\\w+|st\\w+|thatDankIntType" -i.ORIG program.c
-        make a backup of program.c to program.c.ORIG, change case while ignoring words like "fnGameRender", "stObj" and "thatDankIntType"
+        change case and send result to standard output, won't change strings like 
+        "sfSpriteSize" and "stateEn".
+    \$ $prog_name -x "fn\\w+|st\\w+|thatDankIntType" -i=.ORIG program.c
+        make a backup of program.c to program.c.ORIG, prompt then change case in 
+        the file while ignoring words like "fnGameRender", "stObj" and "thatDankIntType".
+    \$ $prog_name -f -i .old program.c
+        make a backup of program.c to program.c.old, change case in the file without 
+        prompting.
 
 BUGS
-    Only problem is it pokes on formatting string such as "\\nThis is" (which becomes "\\n_this is").
+    Only problem is it pokes on formatting string such as "\\nThis is" (which becomes 
+    "\\n_this is"). As a workaround, it does not impact quoted strings (i.e. strings 
+    found between two \" or \' quotes *on the same line*).
+    (NOT IMPLEMENTED YET)
 
 AUTHOR
     Written by Sylvain Saubier (<http://SystemicResponse.com>)
@@ -99,22 +107,51 @@ REPORTING BUGS
     Mail at: <feedback\@systemicresponse.com>
 EOF
 }
-
+# Show main variables
 sub fn_showParams {
+	no warnings 'uninitialized';
 	print( <<EOF );
-FILES           $files
-EXCLUSION PATT  $excl_patt
-IN_PLACE_EDIT   $in_place_edit
-IN_PLACE_SUFFIX $in_place_suffix
-FORCE           $force
+files           $files
+exclusion patt  $excl_patt
+in_place_edit   $in_place_edit
+in_place_suffix $in_place_suffix
+force           $force
 EOF
+	use warnings;
+}
+# line (string)
+# TODO: line (string), exclusion pattern (string)
+sub fn_camelToSnake {
+	my $line = shift();
+$line =~ s/ 
+\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*) 												\b 
+	/\l$1_\l$2/gx;
+$line =~ s/ 
+\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 								  	\b 
+	/\l$1_\l$2_\l$3/gx;
+$line =~ s/ 
+\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 					  		\b 
+	/\l$1_\l$2_\l$3_\l$4/gx;
+$line =~ s/ 
+\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 			  	\b 
+	/\l$1_\l$2_\l$3_\l$4_\l$5/gx;
+$line =~ s/ 
+\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 									\b 
+	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6/gx;
+$line =~ s/ 
+\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)						\b 
+	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7/gx;
+$line =~ s/ 
+\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 				\b 
+	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7_\l$8/gx;
+$line =~ s/ 
+\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 	\b 
+ 	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7_\l$8_\l$9/gx;
+	return $line;
 }
 
 GetOptions ( 'x=s' => \$excl_patt, 'i:s' => \$in_place_suffix, 'f|force' => \$force, 'h|help' => \$help, 'hack' => \$show_params );
 
-if ($show_params) {
-	fn_showParams();
-}
 if ($help) {
 	fn_help();
 	exit;
@@ -122,59 +159,78 @@ if ($help) {
 no warnings 'uninitialized';
 if (defined( $in_place_suffix )) {
 	$in_place_edit = 1;
+	# if $in_place_suffix provided = $temp_suffix is unset
 	if (length( $in_place_suffix )) {
-		# will duplicate file to $file.$in_place_suffix
-		fn_say_err( "SUFFIX IS: $in_place_suffix" );
 		$temp_suffix = "";
+	# if no $in_place_suffix provided = $temp_suffix is set
 	} else {
-		# will duplicate file to $file.$temp_suffix
 		$in_place_suffix = "";
 
 	}
+	# so in both cases: backup to $file.$in_place_suffix.$temp_suffix
 }
 use warnings;
+if ($show_params) {
+	fn_showParams();
+}
 # FILE LOOPING AND REPLACING
 {
-	# WARNING : are you sure you want to edit these files?
-	{
+	if (! @ARGV ) { fn_err( "no file specified" ); }
+	# Warning: are you sure you want to edit these files?
+	if (! $force && $in_place_edit) {
 		my $files = "";
 		foreach my $file (@ARGV) {
 			$files .= "$file ";
 		}
-		fn_say_err( "You are about to edit the following files:\n\t$files\nContinue? [y/N] " );
+		if (length( $in_place_suffix )) {
+			fn_say_err( "You are about to edit the following files:\n\t$files\nThe exclusion pattern is: \"$excl_patt\"\nBackup suffix is: \"$in_place_suffix\"\nContinue? [y/N] " );
+		} else {
+			fn_say_err( "You are about to edit the following files:\n\t$files\nThe exclusion pattern is: \"$excl_patt\"\nNo backup suffix provided.\nContinue? [y/N] " );
+		}
 		my $in = <STDIN>;
 		chomp( $in );
 		# it's actually also matching "yES" too but hey it's funny lmfao lol xD
 		unless ($in =~ /[Yy](es|ES)?/) {
-			fn_say_err( "not editing files - exiting" );
+			fn_say_err( "not editing files - exiting\n" );
 			exit;
 		}
 	}
 	foreach my $file (@ARGV) {
-		my $fh_in; my $fh_out;
 		fn_say_err( "parsing $file\n" );
-		open( $fh_in, "<", $file ) || fn_err( "can't open \"$file\"" );
 		if ($in_place_edit) {
-			open( $fh_out, ">", $file.$in_place_suffix.$temp_suffix ) || fn_err( "can't open \"$file.$in_place_suffix.$temp_suffix\" for writing" );
-		}
-		# 1. Copy file $file to $file.c2c or $file.$in_place_suffix
-		while (my $line = <$fh_in>) {
-			#$line =~ s/    [Ff][Aa][Mm]      /GUYS/x;
-			if ($in_place_edit) { 	print( $fh_out $line );
-			} else { 		print( STDOUT $line );
+			move( $file, $file.$in_place_suffix.$temp_suffix )
+				|| fn_err( "can't rename \"$file\" to \"$file$in_place_suffix$temp_suffix\"" );
+			open( my $fh_in, "<", $file.$in_place_suffix.$temp_suffix ) 
+				|| fn_err( "can't open \"$file$in_place_suffix$temp_suffix\" for reading" );
+			open( my $fh_out, ">", $file ) 
+				|| fn_err( "can't open \"$file\" for writing" );
+			while (my $line = <$fh_in>) {
+				#$line = fn_camelToSnake( $line, $excl_patt );
+				$line = fn_camelToSnake( $line );
+				print( $fh_out $line );
 			}
+			close( $fh_in ); close( $fh_out );
+			# remove temp file
+			if (length( $temp_suffix )) {
+				# It means $in_place_suffix == "" so we can ignore it
+				unlink( $file.$temp_suffix ) || fn_err( "can't remove \"$file$temp_suffix\"" );
+			}
+		} else {
+			open( my $fh_in, "<", $file ) 
+				|| fn_err( "can't open \"$file\" for reading" );
+			while (my $line = <$fh_in>) {
+				#$line = fn_camelToSnake( $line, $excl_patt );
+				$line = fn_camelToSnake( $line );
+				print( STDOUT $line );
+			}
+			close( $fh_in );
 		}
-		# 2. Print to STDOUT or edit the $file.c2c or $file
-
-		close( $fh_in );
-		if ($in_place_edit) { close( $fh_out ); }
 	}
 }
-
-# How do you handle files?
-#if test -z "$files"; then
-#	fn_err "no FILE argument provided (see --help)" 10
-#fi
+# No need for end message
+#fn_say_err( "all done\n" );
+#TODO: proper exit?
+exit;
 
 # SED
 # Generate list of excluded words
