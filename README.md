@@ -7,16 +7,16 @@ Convert all camelCase (or CamelCase) words to snake_case.
 ## OPTIONS
     -x PATTERNS         PATTERNS is a '|'-separated list of regex patterns; 
                         matching strings won't be altered
-			(NOT IMPLEMENTED YET)
-    -i [SUFFIX]		edit files in place (makes backup if SUFFIX supplied)
+                        (NOT IMPLEMENTED YET)
+    -i [SUFFIX]         edit files in place (makes backup if SUFFIX supplied)
     -f, --force         force in-place editing
     -h, --help          show this help message
 
 ## BASE PATTERN
 The base regex pattern for matching [cC]amelCase words is:
 
-	< |-FIRST_ATOM-||-------ATOM-------||-------ATOM-------||...|  >
-	\b([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)\b
+        < |-FIRST_ATOM-||-------ATOM-------||-------ATOM-------||...|  >
+        \b([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)\b
 
 ## EXAMPLES
     $ ./camel2snake.pl -x "sf\w+|\w+En" *.c *.h
