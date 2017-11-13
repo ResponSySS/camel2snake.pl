@@ -68,7 +68,7 @@ $prog_name $VERSION
     Convert all camelCase (or CamelCase) words to snake_case (works great on C files).
 
 USAGE
-    $prog_name [OPTIONS] FILE
+    ./$prog_name [OPTIONS] FILE
 
 OPTIONS
     -x PATTERNS         PATTERNS is a '|'-separated list of regex patterns; 
@@ -84,13 +84,13 @@ BASE PATTERN
         \\b([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)\\b
 
 EXAMPLES
-    \$ $prog_name -x "sf\\w+|\\w+En" *.c *.h
+    \$ ./$prog_name -x "sf\\w+|\\w+En" *.c *.h
         change case and send result to standard output, won't change strings like 
         "sfSpriteSize" and "stateEn".
-    \$ $prog_name -x "fn\\w+|st\\w+|thatDankIntType" -i=.ORIG program.c
+    \$ ./$prog_name -x "fn\\w+|st\\w+|thatDankIntType" -i=.ORIG program.c
         make a backup of program.c to program.c.ORIG, prompt then change case in 
         the file while ignoring words like "fnGameRender", "stObj" and "thatDankIntType".
-    \$ $prog_name -f -i .old program.c
+    \$ ./$prog_name -f -i .old program.c
         make a backup of program.c to program.c.old, change case in the file without 
         prompting.
 
