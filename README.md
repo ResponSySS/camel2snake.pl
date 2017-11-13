@@ -14,6 +14,7 @@ Convert all camelCase (or CamelCase) words to snake_case.
 
 ## BASE PATTERN
 The base regex pattern for matching [cC]amelCase words is:
+
 	< |-FIRST_ATOM-||-------ATOM-------||-------ATOM-------||...|  >
 	\b([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)\b
 
