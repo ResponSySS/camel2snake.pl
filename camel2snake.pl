@@ -18,11 +18,7 @@
 #      REVISION:  ---
 #===============================================================================
 
-# TODO: EXCLUSION PATTERNS NOT IMPLEMENTED YET
-# 	* -x PATTERN : ignore words matching PATTERN
-# 	* ignore strings preceded by \n, \t, \a, \b, \f, \v, \xHH, \e, \uHHH, \uHHH
-# 		like \nthisVarHere or \tthatParam
-# 	* OR just ignore strings between quotes
+# TODO: MORE AND MORE TESTING
 # TODO: Use $INPLACE_EDIT
 
 use strict;
@@ -32,7 +28,7 @@ use Getopt::Long;
 use File::Copy;
 
 my $prog_name 	= "camel2snake.pl";
-our $VERSION 	= "0.5";
+our $VERSION 	= "0.8";
 
 my $files = "";
 my $temp_suffix = ".c2c";
@@ -73,7 +69,6 @@ USAGE
 OPTIONS
     -x PATTERNS         PATTERNS is a '|'-separated list of regex patterns; 
                         matching strings won't be altered
-                        (NOT IMPLEMENTED YET)
     -i [SUFFIX]         edit files in place (makes backup if SUFFIX supplied)
     -f, --force         force in-place editing
     -h, --help          show this help message
@@ -84,10 +79,10 @@ BASE PATTERN
         \\b([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)\\b
 
 EXAMPLES
-    \$ ./$prog_name -x "sf\\w+|\\w+En" *.c *.h
+    \$ ./$prog_name -x "\\bsf\\w+|\\w+En\b" *.c *.h
         change case and send result to standard output, won't change strings like 
         "sfSpriteSize" and "stateEn".
-    \$ ./$prog_name -x "fn\\w+|st\\w+|thatDankIntType" -i=.ORIG program.c
+    \$ ./$prog_name -x '\\bfn\\w+|\\bst\\w+|thatDankIntType' -i=.ORIG program.c
         make a backup of program.c to program.c.ORIG, prompt then change case in 
         the file while ignoring words like "fnGameRender", "stObj" and "thatDankIntType".
     \$ ./$prog_name -f -i .old program.c
@@ -96,9 +91,8 @@ EXAMPLES
 
 BUGS
     Only problem is it pokes on formatting string such as "\\nThis is" (which becomes 
-    "\\n_this is"). As a workaround, it does not impact quoted strings (i.e. strings 
-    found between two \" or \' quotes *on the same line*).
-    (NOT IMPLEMENTED YET)
+    "\\n_this is"). As a workaround, $prog_name does not impact quoted strings (i.e. 
+    strings found between two \" or \' quotes *on the same line*).
 
 AUTHOR
     Written by Sylvain Saubier (<http://SystemicResponse.com>)
@@ -110,7 +104,7 @@ EOF
 # Show main variables
 sub fn_showParams {
 	no warnings 'uninitialized';
-	print( <<EOF );
+	print( STDERR <<EOF );
 files           $files
 exclusion patt  $excl_patt
 in_place_edit   $in_place_edit
@@ -119,34 +113,27 @@ force           $force
 EOF
 	use warnings;
 }
-# line (string)
-# TODO: line (string), exclusion pattern (string)
+# line (string), exclusion pattern (string)
+# TODO: there's probably a way to optimize the regex by looping it
 sub fn_camelToSnake {
 	my $line = shift();
-$line =~ s/ 
-\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*) 												\b 
-	/\l$1_\l$2/gx;
-$line =~ s/ 
-\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 								  	\b 
-	/\l$1_\l$2_\l$3/gx;
-$line =~ s/ 
-\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 					  		\b 
-	/\l$1_\l$2_\l$3_\l$4/gx;
-$line =~ s/ 
-\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 			  	\b 
-	/\l$1_\l$2_\l$3_\l$4_\l$5/gx;
-$line =~ s/ 
-\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 									\b 
-	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6/gx;
-$line =~ s/ 
-\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)						\b 
-	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7/gx;
-$line =~ s/ 
-\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 				\b 
-	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7_\l$8/gx;
-$line =~ s/ 
-\b ([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*) 	\b 
- 	/\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7_\l$8_\l$9/gx;
+	my $at_1 = '[A-Z]?[a-z]+';
+	my $at = '[0-9]+|[A-Z][a-z]*';
+	#my $bnd_1 = '(?![\'"]\W+\b)';
+	#my $bnd_2 = '(?!\W+\b[\'"])';
+	my $bnd_1 = '(?![\'"]\W*)';
+	my $bnd_2 = '(?!\W*[\'"])';
+	my $lookahd = '';
+	if (length( my $excl_patt = shift() )) { $lookahd = '(?!'.$excl_patt.')'; }
+	$line =~ s/ ${bnd_1} \b ${lookahd} ($at_1)($at) 						\b ${bnd_2} /\l$1_\l$2/gx;
+	$line =~ s/ ${bnd_1} \b ${lookahd} ($at_1)($at)($at) 						\b ${bnd_2} /\l$1_\l$2_\l$3/gx;
+	$line =~ s/ ${bnd_1} \b ${lookahd} ($at_1)($at)($at)($at) 			  		\b ${bnd_2} /\l$1_\l$2_\l$3_\l$4/gx;
+	$line =~ s/ ${bnd_1} \b ${lookahd} ($at_1)($at)($at)($at)($at) 					\b ${bnd_2} /\l$1_\l$2_\l$3_\l$4_\l$5/gx;
+	$line =~ s/ ${bnd_1} \b ${lookahd} ($at_1)($at)($at)($at)($at)($at) 				\b ${bnd_2} /\l$1_\l$2_\l$3_\l$4_\l$5_\l$6/gx;
+	$line =~ s/ ${bnd_1} \b ${lookahd} ($at_1)($at)($at)($at)($at)($at)($at)			\b ${bnd_2} /\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7/gx;
+	$line =~ s/ ${bnd_1} \b ${lookahd} ($at_1)($at)($at)($at)($at)($at)($at)($at) 			\b ${bnd_2} /\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7_\l$8/gx;
+	$line =~ s/ ${bnd_1} \b ${lookahd} ($at_1)($at)($at)($at)($at)($at)($at)($at)($at) 		\b ${bnd_2} /\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7_\l$8_\l$9/gx;
+	$line =~ s/ ${bnd_1} \b ${lookahd} ($at_1)($at)($at)($at)($at)($at)($at)($at)($at)($at)($at) 	\b ${bnd_2} /\l$1_\l$2_\l$3_\l$4_\l$5_\l$6_\l$7_\l$8_\l$9_\l$10/gx;
 	return $line;
 }
 
@@ -205,8 +192,7 @@ if ($show_params) {
 			open( my $fh_out, ">", $file ) 
 				|| fn_err( "can't open \"$file\" for writing" );
 			while (my $line = <$fh_in>) {
-				#$line = fn_camelToSnake( $line, $excl_patt );
-				$line = fn_camelToSnake( $line );
+				$line = fn_camelToSnake( $line, $excl_patt );
 				print( $fh_out $line );
 			}
 			close( $fh_in ); close( $fh_out );
@@ -219,8 +205,7 @@ if ($show_params) {
 			open( my $fh_in, "<", $file ) 
 				|| fn_err( "can't open \"$file\" for reading" );
 			while (my $line = <$fh_in>) {
-				#$line = fn_camelToSnake( $line, $excl_patt );
-				$line = fn_camelToSnake( $line );
+				$line = fn_camelToSnake( $line, $excl_patt );
 				print( STDOUT $line );
 			}
 			close( $fh_in );

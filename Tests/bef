@@ -1,0 +1,35 @@
+an_r   an_r   an_r_g   an_r_g_b   an_r_g_b_a   an_r_g_b_a_v a_55  a_55_magnum a_55_magnum_gun  a_55_magnum_gun_55  
+
+a_55_magnum:*a_doom_3_b_f_g_game is valid (7 atoms)
+
+nsf_okay to_key
+
+--- PARTIAL MATCH ---
+
+\nthis_var_here;\tthis_var,\v_that_param
+
+!!! NOT MATCHING UNDER THIS LINE !!!
+
+* A55magnum, A55Magnum, 55Magnum; *ARGBA
+
+!!! FORBIDDEN MATCH !!!
+
+"\nsf_this_fuck" sf_a_55_magnum_en sf_a_55_magnum a_55_magnum_en
+
+int_that_type "\nint_that_type" "\nint_that_type_en"
+
+printf ( int_that_type,'\n_that_sprite','\nint_that_type_en' );
+
+printf ( int_that_type,"\n_that_sprite","\nint_that_type_en" );
+
+
+
+=== TEST AREA ===
+This word is a word of knowledgeablljelleljzbjleezble words.
+Do you know some words?
+
+Do you know dem words?
+Or that word?
+
+I give you my sword.
+And my word.
