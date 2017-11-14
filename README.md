@@ -18,12 +18,14 @@ The base regex pattern for matching [cC]amelCase words is:
         \b([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)\b
 
 ## EXAMPLES
-    $ ./camel2snake.pl -x "\bsf\w+|\w+En" *.c *.h
+    $ ./camel2snake.pl -x "\bsf\w+|\w+En\b" *.c *.h
 change case and send result to standard output, won't change strings like 
 "sfSpriteSize" and "stateEn".
+
     $ ./camel2snake.pl -x '\bfn\w+|\bst\w+|thatDankIntType' -i=.ORIG program.c
 make a backup of program.c to program.c.ORIG, prompt then change case in 
 the file while ignoring words like "fnGameRender", "stObj" and "thatDankIntType".
+
     $ ./camel2snake.pl -f -i .old program.c
 make a backup of program.c to program.c.old, change case in the file without 
 prompting.

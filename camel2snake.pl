@@ -79,7 +79,7 @@ BASE PATTERN
         \\b([A-Z]?[a-z]+)([0-9]+|[A-Z][a-z]*)([0-9]+|[A-Z][a-z]*)(...)\\b
 
 EXAMPLES
-    \$ ./$prog_name -x "\\bsf\\w+|\\w+En\b" *.c *.h
+    \$ ./$prog_name -x "\\bsf\\w+|\\w+En\\b" *.c *.h
         change case and send result to standard output, won't change strings like 
         "sfSpriteSize" and "stateEn".
     \$ ./$prog_name -x '\\bfn\\w+|\\bst\\w+|thatDankIntType' -i=.ORIG program.c
