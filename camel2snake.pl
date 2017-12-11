@@ -117,6 +117,9 @@ EOF
 # TODO: there's probably a way to optimize the regex by looping it
 sub fn_camelToSnake {
 	my $line = shift();
+	# TODO: use qr() instead? But it turns regex pattern to case-insensitive, why???
+	#my $at_1 = qr/[A-Z]?[a-z]+/;
+	#my $at = qr/[0-9]+|[A-Z][a-z]*/;
 	my $at_1 = '[A-Z]?[a-z]+';
 	my $at = '[0-9]+|[A-Z][a-z]*';
 	#my $bnd_1 = '(?![\'"]\W+\b)';
